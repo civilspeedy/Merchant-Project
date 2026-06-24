@@ -32,6 +32,11 @@
         <version>7.1.0</version>
         <scope>compile</scope>
     </dependency>
+    <dependency>
+        <groupId>com.microsoft.sqlserver</groupId>
+        <artifactId>mssql-jdbc</artifactId>
+        <version>13.4.0.jre11</version>
+    </dependency>
   </dependencies>
   <build>
   <plugins>
