@@ -6,7 +6,7 @@ def main(dbname):
     c = conn.cursor()
     c.execute("""
     CREATE TABLE User(
-        ID INTEGER PRIMARY KEY AUTOINCREMENT, 
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
         Username VARCHAR(20),
         Password VARCHAR(20),
         Balance FLOAT);""")
