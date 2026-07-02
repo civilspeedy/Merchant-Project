@@ -1,7 +1,6 @@
 package com.example;
 
-import com.example.records.User;
-import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+import com.example.util.Log;
 
 /**
  * Hello world!
@@ -9,14 +8,15 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
  */
 public class App {
 
-    public static void main(String[] args) {
-        System.out.println("Hello World!");
-    }
+    private static final Log log = new Log("App");
+    private static String dbUrl =
+        "jdbc:sqlserver://localhost:1433;databaseName=?;encrypted=true;trustServerCertificate=true;";
 
-    private static void storeUser(String username, String password) {
-        var encoder = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
-        var encodedPassword = encoder.encode(password);
-        var user = new User(username, encodedPassword);
-        // storage mechanisms
+    public static void main(String[] args) {
+        String dbName = System.getenv("DB_NAME").trim();
+        if (dbName == null) {
+            log.err(new IllegalArgumentException("DB_NAME not define"));
+        }
+        dbUrl = dbUrl.replace("?", dbName);
     }
 }

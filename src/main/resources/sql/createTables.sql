@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username NVARCHAR(50) NOT NULL UNIQUE,
+    password NVARCHAR(100) NOT NULL,
+);
+
+CREATE TABLE IF NOT EXISTS TABLE inventory (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    code NVARCHAR(5) NOT NULL,
+    exchange NVARCHAR(12) NOT NULL,
+    quantity DECIMAL NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    UNIQUE(user_id, code)
+);
+
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    code NVARCHAR(5) NOT NULL,
+    exchange NVARCHAR(12) NOT NULL,
+    quantity DECIMAL NOT NULL,
+    price DECIMAL NOT NULL,
+    timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    buy BOOLEAN NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);

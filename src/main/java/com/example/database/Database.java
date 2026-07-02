@@ -1,43 +1,88 @@
 package com.example.database;
 
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import tools.jackson.databind.ObjectMapper;
+import com.example.database.records.InputRecord;
+import com.example.util.Log;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public final class Database {
 
-    private static final int PORT = 1433;
-    private static final String DOMAIN = "localhost";
-    private static final String NAME = "sql1";
-    private static final boolean ENCRYPTED = true;
-    private static final boolean TRUST_CERT = true;
-    private static final String user = "sa";
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final Log log = new Log("Database");
+    private static final String USER = "sa";
+    private static Connection connection;
+    private static boolean tablesCreated = false;
+    private static final String CREATE_TABLES_PATH = "sql/createTables.sql";
+    private static final String INSERT_USER_PATH = "sql/insertIntoUser.sql";
+    private static final String INSERT_INVENT_PATH = "sql/insertIntoInvent.sql";
+    private static final String INSERT_TRANS_PATH = "sql/insertIntoTrans.sql";
 
-    private static final String getServerUrl() {
-        return new StringBuilder("jdbc:sqlserver://")
-            .append(DOMAIN)
-            .append(PORT)
-            .append(':')
-            .append(";databaseName=")
-            .append(NAME)
-            .append(";encrypted=")
-            .append(ENCRYPTED)
-            .append(";trustServerCertificate=")
-            .append(TRUST_CERT)
-            .append(';')
-            .toString();
+    public static enum Table {
+        USER,
+        INVENTORY,
+        TRANSACTIONS,
     }
 
-    private static final String getPassword() throws Exception {
-        URL file = Database.class
-            .getClassLoader()
-            .getResource(".secrets/mysqlpass.txt");
-        if (file == null) {
-            throw new IllegalArgumentException("unable to find secret!");
+    private static final String getQuery(String path) throws IOException {
+        InputStream stream = Database.class.getResourceAsStream(path);
+        if (stream == null) {
+            throw new IOException(path + " could not be found");
+        }
+        return new String(stream.readAllBytes());
+    }
+
+    private static final void createTables() throws Exception {
+        String sql = getQuery(CREATE_TABLES_PATH);
+        Statement statement = connection.createStatement();
+        statement.execute(sql);
+        statement.close();
+        connection.commit();
+        tablesCreated = true;
+    }
+
+    public static final void insert(Table table, InputRecord data)
+        throws Exception {
+        if (!tablesCreated) {
+            throw new IllegalStateException(
+                "tables may not exist! createTables() must run before this method!"
+            );
         }
 
-        return Files.readString(Paths.get(file.toURI()));
+        String path = switch (table) {
+            case USER -> INSERT_USER_PATH;
+            case INVENTORY -> INSERT_INVENT_PATH;
+            case TRANSACTIONS -> INSERT_TRANS_PATH;
+        };
+
+        String sql = getQuery(path);
+
+        sql = sql.replaceFirst(
+            data.getReplacementString(),
+            data.getFieldString()
+        );
+
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
+        statement.close();
+        connection.commit();
+    }
+
+    public static final void connect(String url) throws Exception {
+        String password = System.getenv("DB_PASSWORD").trim();
+
+        if (password == null) {
+            throw new IllegalArgumentException("DB_PASSWORD not defined");
+        }
+
+        connection = DriverManager.getConnection(url, USER, password);
+    }
+
+    public static final void close() throws SQLException {
+        log.out("closing database");
+        connection.commit();
+        connection.close();
     }
 }
