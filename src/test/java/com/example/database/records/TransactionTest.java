@@ -1,5 +1,6 @@
 package com.example.database.records;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
@@ -25,7 +26,7 @@ public class TransactionTest {
 
     @Test
     public void userIdTooSmallException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Transaction(
                 Integer.MIN_VALUE,
                 "AAPL",
@@ -36,11 +37,12 @@ public class TransactionTest {
                 true
             );
         });
+        assertEquals("userId cannot be less than zero", ex.getMessage());
     }
 
     @Test
     public void codeTooBigException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Transaction(
                 10,
                 BIG_STR,
@@ -51,11 +53,12 @@ public class TransactionTest {
                 true
             );
         });
+        assertEquals("code length cannot exceed 5", ex.getMessage());
     }
 
     @Test
     public void codeTooSmallException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Transaction(
                 10,
                 "",
@@ -66,11 +69,12 @@ public class TransactionTest {
                 true
             );
         });
+        assertEquals("code cannot be empty or null ", ex.getMessage());
     }
 
     @Test
     public void exchangeTooBigException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Transaction(
                 10,
                 "AAPL",
@@ -81,11 +85,12 @@ public class TransactionTest {
                 true
             );
         });
+        assertEquals("exchange length cannot exceed 12", ex.getMessage());
     }
 
     @Test
     public void exchangeTooSmallException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Transaction(
                 10,
                 "AAPL",
@@ -96,11 +101,12 @@ public class TransactionTest {
                 true
             );
         });
+        assertEquals("exchange cannot be empty or null ", ex.getMessage());
     }
 
     @Test
     public void quantityTooBigException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Transaction(
                 10,
                 "AAPL",
@@ -111,11 +117,12 @@ public class TransactionTest {
                 true
             );
         });
+        assertEquals("quantity cannot exceed 1.0E38", ex.getMessage());
     }
 
     @Test
     public void quantityTooSmallException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Transaction(
                 10,
                 "AAPL",
@@ -126,11 +133,15 @@ public class TransactionTest {
                 true
             );
         });
+        assertEquals(
+            "quantity cannot be less than or equal to 0 ",
+            ex.getMessage()
+        );
     }
 
     @Test
     public void priceTooBigException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Transaction(
                 10,
                 "AAPL",
@@ -141,11 +152,12 @@ public class TransactionTest {
                 true
             );
         });
+        assertEquals("price cannot exceed 1.0E38", ex.getMessage());
     }
 
     @Test
     public void priceTooSmallException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Transaction(
                 10,
                 "AAPL",
@@ -156,11 +168,15 @@ public class TransactionTest {
                 true
             );
         });
+        assertEquals(
+            "price cannot be less than or equal to 0 ",
+            ex.getMessage()
+        );
     }
 
     @Test
     public void timestampTooBigException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Transaction(
                 10,
                 "AAPL",
@@ -171,11 +187,12 @@ public class TransactionTest {
                 true
             );
         });
+        assertEquals("timestamps cannot be in the future", ex.getMessage());
     }
 
     @Test
     public void timestampTooSmallException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Transaction(
                 10,
                 "AAPL",
@@ -186,5 +203,9 @@ public class TransactionTest {
                 true
             );
         });
+        assertEquals(
+            "timestamp cannot be before application existence",
+            ex.getMessage()
+        );
     }
 }

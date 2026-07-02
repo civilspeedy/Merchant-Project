@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public final class Errors {
 
     private static final String TOO_SMALL =
-        "cannot be less than or equal to 0 ";
+        " cannot be less than or equal to 0 ";
     private static final String EMPTY_NULL = " cannot be empty or null ";
 
     /**
@@ -41,7 +41,7 @@ public final class Errors {
         throws IllegalArgumentException {
         if (code.length() > CODE_MAX) {
             throw new IllegalArgumentException(
-                "code length cannot exceed " + String.valueOf(CODE_MAX)
+                "code length cannot exceed " + CODE_MAX
             );
         } else if (code.length() == 0 || code == null) {
             throw new IllegalArgumentException("code" + EMPTY_NULL);
@@ -52,10 +52,10 @@ public final class Errors {
         throws IllegalArgumentException {
         if (exchange.length() > EX_MAX) {
             throw new IllegalArgumentException(
-                "exchange length cannot exceed " + String.valueOf(EX_MAX)
+                "exchange length cannot exceed " + EX_MAX
             );
         } else if (exchange.length() == 0 || exchange == null) {
-            throw new IllegalArgumentException("exchange " + EMPTY_NULL);
+            throw new IllegalArgumentException("exchange" + EMPTY_NULL);
         }
     }
 
@@ -63,7 +63,7 @@ public final class Errors {
         throws IllegalArgumentException {
         if (quantity > DECIMAL_MAX) {
             throw new IllegalArgumentException(
-                "quantity cannot exceed " + String.valueOf(DECIMAL_MAX)
+                "quantity cannot exceed " + DECIMAL_MAX
             );
         } else if (quantity <= 0) {
             throw new IllegalArgumentException("quantity" + TOO_SMALL);
@@ -87,7 +87,7 @@ public final class Errors {
         throws IllegalArgumentException {
         if (price > DECIMAL_MAX) {
             throw new IllegalArgumentException(
-                "price cannot exceed " + String.valueOf(DECIMAL_MAX)
+                "price cannot exceed " + DECIMAL_MAX
             );
         } else if (price <= 0) {
             throw new IllegalArgumentException("price" + TOO_SMALL);

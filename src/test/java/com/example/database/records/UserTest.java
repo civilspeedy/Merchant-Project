@@ -1,5 +1,6 @@
 package com.example.database.records;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Random;
@@ -34,8 +35,37 @@ public class UserTest {
 
     @Test
     public void usernameTooBigException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new User(randomLargeString(), SAFE_STRING);
         });
+
+        assertEquals("username length cannot exceed 50", ex.getMessage());
+    }
+
+    @Test
+    public void usernameTooSmallException() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
+            new User("", SAFE_STRING);
+        });
+
+        assertEquals("username cannot be empty or null", ex.getMessage());
+    }
+
+    @Test
+    public void passwordTooBigException() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
+            new User(SAFE_STRING, randomLargeString());
+        });
+
+        assertEquals("password length cannot exceed 90", ex.getMessage());
+    }
+
+    @Test
+    public void passwordTooSmallException() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
+            new User(SAFE_STRING, "");
+        });
+
+        assertEquals("password cannot be empty or null", ex.getMessage());
     }
 }

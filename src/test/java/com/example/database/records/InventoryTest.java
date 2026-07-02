@@ -30,9 +30,10 @@ public class InventoryTest {
      */
     @Test
     public void userIdTooSmallException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Inventory(Integer.MIN_VALUE, BLANK, BLANK, 1.0);
         });
+        assertEquals("userId cannot be less than zero", ex.getMessage());
     }
 
     /**
@@ -40,9 +41,10 @@ public class InventoryTest {
      */
     @Test
     public void codeTooBigException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Inventory(0, STR_TOO_BIG, BLANK, 1.0);
         });
+        assertEquals("code length cannot exceed 5", ex.getMessage());
     }
 
     /**
@@ -50,9 +52,10 @@ public class InventoryTest {
      */
     @Test
     public void codeTooSmallException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Inventory(0, "", BLANK, 1.0);
         });
+        assertEquals("code cannot be empty or null ", ex.getMessage());
     }
 
     /**
@@ -60,9 +63,10 @@ public class InventoryTest {
      */
     @Test
     public void exchangeTooBigException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Inventory(0, BLANK, STR_TOO_BIG, 1.0);
         });
+        assertEquals("exchange length cannot exceed 12", ex.getMessage());
     }
 
     /**
@@ -70,9 +74,10 @@ public class InventoryTest {
      */
     @Test
     public void exchangeTooSmallException() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
             new Inventory(0, BLANK, "", 1.0);
         });
+        assertEquals("exchange cannot be empty or null ", ex.getMessage());
     }
 
     /**
@@ -80,9 +85,10 @@ public class InventoryTest {
      */
     @Test
     public void quantityTooBigException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Inventory(0, BLANK, STR_TOO_BIG, Double.MAX_VALUE);
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
+            new Inventory(0, BLANK, BLANK, Double.MAX_VALUE);
         });
+        assertEquals("quantity cannot exceed 1.0E38", ex.getMessage());
     }
 
     /**
@@ -90,9 +96,13 @@ public class InventoryTest {
      */
     @Test
     public void quantityTooSmallException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Inventory(0, BLANK, STR_TOO_BIG, Double.MIN_VALUE);
+        var ex = assertThrows(IllegalArgumentException.class, () -> {
+            new Inventory(0, BLANK, BLANK, Double.NEGATIVE_INFINITY);
         });
+        assertEquals(
+            "quantity cannot be less than or equal to 0 ",
+            ex.getMessage()
+        );
     }
 
     /**
