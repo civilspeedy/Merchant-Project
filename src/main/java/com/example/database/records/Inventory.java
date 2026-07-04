@@ -13,19 +13,12 @@ public record Inventory(
     }
 
     @Override
-    public String getFieldString() {
-        return new StringBuilder(String.valueOf(userId))
-            .append(',')
-            .append(code)
-            .append(',')
-            .append(exchange)
-            .append(',')
-            .append(quantity)
-            .toString();
-    }
-
-    @Override
-    public String getReplacementString() {
-        return "?, ?, ?, ?";
+    public String[] getFieldArray() {
+        return new String[] {
+            String.valueOf(userId),
+            code,
+            exchange,
+            String.valueOf(quantity),
+        };
     }
 }

@@ -24,21 +24,15 @@ public record Transaction(
     }
 
     @Override
-    public String getFieldString() {
-        return new StringBuilder(String.valueOf(userId))
-            .append(',')
-            .append(code)
-            .append(',')
-            .append(exchange)
-            .append(',')
-            .append(timestamp.toString())
-            .append(',')
-            .append(buy)
-            .toString();
-    }
-
-    @Override
-    public String getReplacementString() {
-        return "?, ?, ?, ?, ?, ?, ?";
+    public String[] getFieldArray() {
+        return new String[] {
+            String.valueOf(userId),
+            code,
+            exchange,
+            String.valueOf(quantity),
+            String.valueOf(price),
+            timestamp.toString(),
+            String.valueOf(buy),
+        };
     }
 }

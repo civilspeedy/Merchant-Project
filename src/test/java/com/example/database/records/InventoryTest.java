@@ -1,5 +1,6 @@
 package com.example.database.records;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -109,12 +110,8 @@ public class InventoryTest {
      * Correctly return the field string representation of the Inventory record.
      */
     @Test
-    public void testGetFieldString() {
-        assertEquals("0,AAPL,NASDAQ,1.6", testInventory.getFieldString());
-    }
-
-    @Test
-    public void testGetReplacementString() {
-        assertEquals("?, ?, ?, ?", testInventory.getReplacementString());
+    public void testGetFieldArray() {
+        String[] expectedArray = new String[] { "0", "AAPL", "NASDAQ", "1.6" };
+        assertArrayEquals(expectedArray, testInventory.getFieldArray());
     }
 }

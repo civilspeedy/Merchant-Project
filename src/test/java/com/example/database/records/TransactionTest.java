@@ -1,27 +1,66 @@
 package com.example.database.records;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class TransactionTest {
 
     private static final String BIG_STR =
         "This is a string that will be way too big for this record in any field.";
+    private static Transaction testTransaction;
+    private static LocalDateTime expectedTimestamp;
 
-    @Test
-    public void testConstruct() {
-        new Transaction(
+    /**
+     * Creates a normal non-exception throwing {@link Transaction} record.
+     * @throws IllegalArgumentException
+     */
+    private static final void getNormal() throws IllegalArgumentException {
+        expectedTimestamp = LocalDateTime.now();
+        testTransaction = new Transaction(
             10,
             "AAPL",
             "NASDAQ",
-            30.0,
+            30,
             200.8,
-            LocalDateTime.now(),
+            expectedTimestamp,
             true
         );
+    }
+
+    @BeforeAll
+    public static void setup() {
+        getNormal();
+    }
+
+    @Test
+    public void testFields() {
+        assertEquals(testTransaction.userId(), 10);
+        assertEquals(testTransaction.code(), "AAPL");
+        assertEquals(testTransaction.exchange(), "NASDAQ");
+        assertEquals(testTransaction.quantity(), 30);
+        assertEquals(testTransaction.price(), 200.8);
+        assertEquals(testTransaction.timestamp(), expectedTimestamp);
+        assertEquals(testTransaction.buy(), true);
+    }
+
+    @Test
+    public void testGetFieldArray() {
+        String[] expectArray = new String[] {
+            "10",
+            "AAPL",
+            "NASDAQ",
+            "30.0",
+            "200.8",
+            expectedTimestamp.toString(),
+            "true",
+        };
+
+        assertArrayEquals(expectArray, testTransaction.getFieldArray());
     }
 
     @Test

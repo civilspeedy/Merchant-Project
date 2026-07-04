@@ -1,5 +1,6 @@
 package com.example.database.records;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.Test;
 public class UserTest {
 
     private static final Random rnd = new Random();
-    private static final int MAX_USR_SIZE = 50;
+    private static final int MAX_USR_SIZE = 51;
     private static final int UNICODE_MAX = 128;
     private static final String SAFE_STRING = "this is a safe string";
 
@@ -25,8 +26,6 @@ public class UserTest {
 
         return stringBuilder.toString();
     }
-
-    // these should probably check messages
 
     @Test
     public void testConstruct() {
@@ -67,5 +66,12 @@ public class UserTest {
         });
 
         assertEquals("password cannot be empty or null", ex.getMessage());
+    }
+
+    @Test
+    public void testGetFieldArray() {
+        User testUser = new User(SAFE_STRING, SAFE_STRING);
+        String[] expectedArray = new String[] { SAFE_STRING, SAFE_STRING };
+        assertArrayEquals(expectedArray, testUser.getFieldArray());
     }
 }

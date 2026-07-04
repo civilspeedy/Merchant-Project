@@ -21,12 +21,7 @@ public record User(String username, String password) implements InputRecord {
     }
 
     @Override
-    public String getFieldString() {
-        return username + ", " + password;
-    }
-
-    @Override
-    public String getReplacementString() {
-        return "?, ?";
+    public String[] getFieldArray() {
+        return new String[] { username, password };
     }
 }
