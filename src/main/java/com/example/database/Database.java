@@ -7,13 +7,15 @@ import com.example.database.records.User;
 import com.example.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLClientInfoException;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public final class Database {
 
@@ -57,28 +59,27 @@ public final class Database {
         tablesCreated = true;
     }
 
-    public static final void insert(InputRecord data) throws Exception {
+    public static enum Insert {
+        USER("insertIntoUser.sql"),
+        TRANS("insertIntoTrans.sql"),
+        INVENT("insertIntoInvent.sql");
+
+        public final String path;
+
+        private Insert(String path) {
+            this.path = path;
+        }
+    }
+
+    public static final void insert(Insert queryType, InputRecord data)
+        throws Exception {
         if (!tablesCreated) {
             throw new IllegalStateException(
                 "tables may not exist! createTables() must run before this method!"
             );
         }
 
-        String path = "/sql/insert/";
-        if (data instanceof User) {
-            path.concat("insertIntoUser.sql");
-        } else if (data instanceof Transaction) {
-            path.concat("insertIntoTrans.sql");
-        } else if (data instanceof Inventory) {
-            path.concat("insertIntoInvent.sql");
-        } else {
-            throw new IllegalArgumentException("invalid record type");
-        }
-        String sql = getQuery(path);
-
-        // replace with statement.setString()
-
-        System.out.println(sql);
+        String sql = getQuery("/sql/insert/" + queryType.path);
 
         PreparedStatement statement = connection.prepareStatement(sql);
         String[] fields = data.getFieldArray();
@@ -86,6 +87,8 @@ public final class Database {
         for (int i = 0; i < fields.length; i++) {
             statement.setString(i + 1, fields[i]);
         }
+
+        statement.execute();
 
         statement.close();
         connection.commit();
@@ -112,28 +115,54 @@ public final class Database {
     }
 
     public static enum Select {
-        PASSWORD,
-        USER_ID,
-        USERNAME,
-        ALL_INVENT,
-        ALL_TRANS,
+        PASSWORD("password", "users/selectUserPassword.sql"),
+        USER_ID("id", "users/selectUserId.sql"),
+        USERNAMES("username", "users/selectAllUsernames.sql"),
+        ALL_INVENT("*", "inventory/selectAllInventory.sql"),
+        ALL_TRANS("*", "transactions/selectAllTransactions.sql");
+
+        public final String label;
+        public final String path;
+
+        private Select(String label, String path) {
+            this.label = label;
+            this.path = path;
+        }
     }
 
-    public static final Object select(Select valueToSelect, String where)
-        throws SQLException {
-        String query = "/sql/select/";
+    public static final String[] select(Select selection, String target)
+        throws Exception {
+        String sql = getQuery("/sql/select/" + selection.path);
+        PreparedStatement statement = connection.prepareStatement(sql);
+        if (target != null) {
+            statement.setString(1, target);
+        }
 
-        query += switch (valueToSelect) {
-            case PASSWORD -> "users/selectUserPassword.sql";
-            case USER_ID -> "users/selectUserId.sql";
-            case USERNAME -> "users/selectUserName.sql";
-            case ALL_INVENT -> "inventory/selectAllInventory.sql";
-            case ALL_TRANS -> "transactions/selectAllTransactions.sql";
-        };
+        ResultSet result = statement.executeQuery();
 
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, where);
-        ResultSet results = statement.executeQuery();
-        return results; // need to figure out value selection
+        ArrayList<String> results = new ArrayList<String>();
+        if (selection.label.equals("*")) {
+            while (result.next()) {
+                StringBuilder rowString = new StringBuilder();
+                ResultSetMetaData meta = result.getMetaData();
+                int columns = meta.getColumnCount();
+
+                for (int i = 1; i <= columns; i++) {
+                    if (i > 1) {
+                        rowString.append(',');
+                    }
+                    rowString.append(result.getString(i));
+                }
+                results.add(rowString.toString());
+            }
+        } else {
+            while (result.next()) {
+                results.add(result.getString(selection.label));
+            }
+        }
+
+        statement.close();
+
+        return results.toArray(new String[0]);
     }
 }

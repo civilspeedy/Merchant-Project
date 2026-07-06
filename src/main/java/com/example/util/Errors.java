@@ -30,10 +30,8 @@ public final class Errors {
 
     private static final void checkUserId(int userId)
         throws IllegalArgumentException {
-        if (userId < 0) {
-            throw new IllegalArgumentException(
-                "userId cannot be less than zero"
-            );
+        if (userId < 1) {
+            throw new IllegalArgumentException("userId cannot be less than 1");
         }
     }
 
@@ -75,12 +73,10 @@ public final class Errors {
         String code,
         String exchange,
         double quantity,
-        double price,
-        LocalDateTime timestamp
+        double price
     ) throws IllegalArgumentException {
         checkInventoryRecord(userId, code, exchange, quantity);
         checkPrice(price);
-        checkTimeStamp(timestamp);
     }
 
     private static final void checkPrice(double price)

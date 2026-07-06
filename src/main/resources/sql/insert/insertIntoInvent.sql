@@ -1,1 +1,1 @@
-INSERT INTO Inventory VALUES (?, ?, ?, ?);
+INSERT INTO Inventory (user_id, code, exchange, quantity) VALUES (?, ?, ?, ?);

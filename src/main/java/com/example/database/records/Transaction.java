@@ -1,7 +1,6 @@
 package com.example.database.records;
 
 import com.example.util.Errors;
-import java.time.LocalDateTime;
 
 public record Transaction(
     int userId,
@@ -9,18 +8,10 @@ public record Transaction(
     String exchange,
     double quantity,
     double price,
-    LocalDateTime timestamp,
     boolean buy
 ) implements InputRecord {
     public Transaction {
-        Errors.checkTransactionRecord(
-            userId,
-            code,
-            exchange,
-            quantity,
-            price,
-            timestamp
-        );
+        Errors.checkTransactionRecord(userId, code, exchange, quantity, price);
     }
 
     @Override
@@ -31,7 +22,6 @@ public record Transaction(
             exchange,
             String.valueOf(quantity),
             String.valueOf(price),
-            timestamp.toString(),
             String.valueOf(buy),
         };
     }

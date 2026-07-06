@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS inventory (
     user_id INT NOT NULL,
     code NVARCHAR(5) NOT NULL,
     exchange NVARCHAR(12) NOT NULL,
-    quantity DECIMAL NOT NULL,
+    quantity DOUBLE NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     UNIQUE(user_id, code)
 );
@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS transactions (
     user_id INT NOT NULL,
     code NVARCHAR(5) NOT NULL,
     exchange NVARCHAR(12) NOT NULL,
-    quantity DECIMAL NOT NULL,
-    price DECIMAL NOT NULL,
-    timestamp TIMESTAMP,
+    quantity DOUBLE NOT NULL,
+    price DOUBLE NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     buy BOOLEAN NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

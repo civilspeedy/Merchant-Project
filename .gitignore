@@ -152,3 +152,7 @@ cython_debug/
 #.idea/
 /.secrets
 /src/main/resources/.secrets
+.project
+.classpath
+.settings/org.eclipse.m2e.core.prefs
+/.settings
