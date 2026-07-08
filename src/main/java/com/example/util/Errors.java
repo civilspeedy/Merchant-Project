@@ -1,7 +1,5 @@
 package com.example.util;
 
-import java.time.LocalDateTime;
-
 public final class Errors {
 
     private static final String TOO_SMALL =
@@ -87,21 +85,6 @@ public final class Errors {
             );
         } else if (price <= 0) {
             throw new IllegalArgumentException("price" + TOO_SMALL);
-        }
-    }
-
-    private static final void checkTimeStamp(LocalDateTime timestamp)
-        throws IllegalArgumentException {
-        if (timestamp.isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException(
-                "timestamps cannot be in the future"
-            );
-        } else if (
-            timestamp.isBefore(LocalDateTime.parse("2026-07-01T12:00:00"))
-        ) {
-            throw new IllegalArgumentException(
-                "timestamp cannot be before application existence"
-            );
         }
     }
 }

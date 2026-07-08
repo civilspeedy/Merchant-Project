@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -13,14 +12,12 @@ public class TransactionTest {
     private static final String BIG_STR =
         "This is a string that will be way too big for this record in any field.";
     private static Transaction testTransaction;
-    private static LocalDateTime expectedTimestamp;
 
     /**
      * Creates a normal non-exception throwing {@link Transaction} record.
      * @throws IllegalArgumentException
      */
     private static final void getNormal() throws IllegalArgumentException {
-        expectedTimestamp = LocalDateTime.now();
         testTransaction = new Transaction(
             10,
             "AAPL",

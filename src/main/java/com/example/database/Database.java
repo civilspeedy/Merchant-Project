@@ -1,13 +1,9 @@
 package com.example.database;
 
 import com.example.database.records.InputRecord;
-import com.example.database.records.Inventory;
-import com.example.database.records.Transaction;
-import com.example.database.records.User;
 import com.example.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -145,9 +141,8 @@ public final class Database {
             while (result.next()) {
                 StringBuilder rowString = new StringBuilder();
                 ResultSetMetaData meta = result.getMetaData();
-                int columns = meta.getColumnCount();
 
-                for (int i = 1; i <= columns; i++) {
+                for (int i = 1; i <= meta.getColumnCount(); i++) {
                     if (i > 1) {
                         rowString.append(',');
                     }

@@ -2,13 +2,11 @@ package com.example.database;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.database.records.Inventory;
 import com.example.database.records.Transaction;
 import com.example.database.records.User;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -25,11 +23,7 @@ public class DatabaseTest {
     private static final double SAFE_DOUBLE = 1.5324;
     private static final String SAFE_DUB_STR = String.valueOf(SAFE_DOUBLE);
     private static final String SAFE_USER_STR = String.valueOf(SAFE_USER_ID);
-    private static LocalDateTime expectedDate;
-
-    private static final boolean contains(String[] arr, String target) {
-        return Arrays.stream(arr).anyMatch(target::equals);
-    }
+    private static LocalDateTime expectedTimestamp;
 
     @BeforeAll
     public static void setup() throws Exception {
@@ -57,7 +51,7 @@ public class DatabaseTest {
         );
 
         Database.insert(Database.Insert.TRANS, transaction);
-        expectedDate = LocalDateTime.now();
+        expectedTimestamp = LocalDateTime.now();
     }
 
     @Test
@@ -85,6 +79,30 @@ public class DatabaseTest {
     }
 
     @Test
+    public void testSelectAllInventory() throws Exception {
+        String[] results = Database.select(
+            Database.Select.ALL_INVENT,
+            SAFE_USER_STR
+        );
+        if (results.length > 1) {
+            throw new Exception("results too big");
+        }
+
+        String result = results[0];
+        String[] actualArray = result.split(",");
+
+        String[] expectedArray = new String[] {
+            SAFE_USER_STR,
+            SAFE_USER_STR,
+            SAFE_CODE,
+            SAFE_EXCHANGE,
+            SAFE_DUB_STR,
+        };
+
+        assertArrayEquals(expectedArray, actualArray);
+    }
+
+    @Test
     public void testSelectAllTransactions() throws Exception {
         String[] results = Database.select(
             Database.Select.ALL_TRANS,
@@ -92,12 +110,12 @@ public class DatabaseTest {
         );
 
         if (results.length > 1) {
-            throw new Exception("return too big");
+            throw new Exception("results too big");
         }
 
         String result = results[0];
-        String[] values = result.split(",");
-        int numVals = values.length;
+        String[] actualArray = result.split(",");
+        int numVals = actualArray.length;
         String[] expectedArray = new String[] {
             SAFE_USER_STR,
             SAFE_USER_STR,
@@ -115,9 +133,12 @@ public class DatabaseTest {
 
         for (int i = 0; i < numVals; i++) {
             if (expectedArray[i].equals("TIMESTAMP")) {
-                // TODO
+                String[] expectedDate = expectedTimestamp.toString().split("T");
+                String[] actualDate = actualArray[i].split(" ");
+                assertEquals(expectedDate[0], actualDate[0]);
+                // maybe do time but would be hard to get accurate
             } else {
-                assertEquals(expectedArray[i], values[i]);
+                assertEquals(expectedArray[i], actualArray[i]);
             }
         }
     }
