@@ -25,3 +25,8 @@ CREATE TABLE IF NOT EXISTS transactions (
     buy BOOLEAN NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS api_keys (
+    name NVARCHAR(12) NOT NULL PRIMARY KEY,
+    api_key NVARCHAR(25) NOT NULL
+);
