@@ -1,16 +1,32 @@
 package com.example.api.massive;
 
 import com.example.api.massive.records.AggregateBars;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import tools.jackson.databind.ObjectMapper;
 
 public class Massive {
 
     private static final String URL_BASE = "https://api.massive.com/v2/";
+    private static HttpClient client = HttpClient.newBuilder().build();
+    private static final String USER_AGENT = "Mozilla/5.0 (Java-HttpClient)";
+    private static final String ACCEPT = "application/json";
+    private static ObjectMapper objectMapper = new ObjectMapper();
     private static final byte MAX_REQUESTS = 5;
     private static byte requestCount = 0;
+    private static LocalTime lastRequst;
+    private static String key;
 
     String expected =
-        "https://api.massive.com/v2/aggs/ticker/AAPL/range/1/day/2025-11-20/2025-12-28?adjusted=true&sort=asc&limit=100&apiKey=CRTS3dz7N0_CoQjby2p2csSDfa1lZsUl";
+        "https://api.massive.com/v2/aggs/ticker/AAPL/range/1/day/2025-11-20/2025-12-28?adjusted=true&sort=asc&limit=100&apiKey=";
+
+    // can't believe I committed with the key still there...
 
     private static String localToString(LocalDate date) {
         return new StringBuilder()
@@ -22,15 +38,43 @@ public class Massive {
             .toString();
     }
 
+    private static boolean stringCheck(String str) {
+        return str.isBlank() || str.isEmpty() || str == null;
+    }
+
     public static AggregateBars getAggregate(
         LocalDate start,
         LocalDate end,
         String code
-    ) {
-        String startString = localToString(start);
-        String endString = localToString(end);
-        String apiKey = "";
-        String url = new StringBuilder(URL_BASE)
+    ) throws Exception {
+        if (start.compareTo(end) >= 0) {
+            throw new IllegalArgumentException("end cannot be before start");
+        }
+        if (stringCheck(code)) {
+            throw new IllegalArgumentException(
+                "code cannot be empty, blank or null"
+            );
+        }
+        if (stringCheck(key)) {
+            throw new IllegalStateException("key is unassigned");
+        }
+
+        Duration timeDifference = Duration.between(lastRequst, LocalTime.now());
+        // I don't trust this to work as I expect.
+        // A separate thread or ticker to reset count every minute would probably be more reliable but could prove overkill.
+        if (timeDifference.toMinutes() > 1) {
+            requestCount = 0;
+        }
+
+        if (requestCount > 5) {
+            throw new IllegalStateException(
+                "no more than five request can be made per minute"
+            );
+        }
+
+        var startString = localToString(start);
+        var endString = localToString(end);
+        var url = new StringBuilder(URL_BASE)
             .append("aggs/ticker/")
             .append(code)
             .append("range/1/day/")
@@ -38,7 +82,38 @@ public class Massive {
             .append('/')
             .append(endString)
             .append("?adjusted=true&sort=asc&limit=120&apiKey=")
-            .append(apiKey)
+            .append(key)
             .toString();
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(new URI(url))
+            .GET()
+            .headers("user-agent", USER_AGENT)
+            .header("accept", ACCEPT)
+            .build();
+
+        HttpResponse<String> response = client.send(
+            request,
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        requestCount++;
+        lastRequst = LocalTime.now();
+
+        int status = response.statusCode();
+        if (status != 200) {
+            throw new IOException("http request failure: " + status);
+        }
+        return objectMapper.readValue(response.body(), AggregateBars.class);
+    }
+
+    public static void setKey(String k) throws IllegalArgumentException {
+        if (k.isBlank() || k.isEmpty() || k == null) {
+            throw new IllegalArgumentException(
+                "massive api key cannot be empty, null or blank"
+            );
+        }
+
+        key = k;
     }
 }
