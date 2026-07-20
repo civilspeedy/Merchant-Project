@@ -20,7 +20,7 @@ public class Massive {
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static final byte MAX_REQUESTS = 5;
     private static byte requestCount = 0;
-    private static LocalTime lastRequst;
+    private static LocalTime lastRequest = null;
     private static String key;
 
     String expected =
@@ -28,13 +28,19 @@ public class Massive {
 
     // can't believe I committed with the key still there...
 
+    private static String smallNumFmt(int num) {
+        return num < 10 ? "0" + num : String.valueOf(num);
+    }
+
     private static String localToString(LocalDate date) {
+        int month = date.getMonthValue();
+        int day = date.getDayOfMonth();
         return new StringBuilder()
             .append(date.getYear())
             .append('-')
-            .append(date.getMonth())
+            .append(smallNumFmt(month))
             .append('-')
-            .append(date.getDayOfMonth())
+            .append(smallNumFmt(day))
             .toString();
     }
 
@@ -59,14 +65,16 @@ public class Massive {
             throw new IllegalStateException("key is unassigned");
         }
 
-        Duration timeDifference = Duration.between(lastRequst, LocalTime.now());
-        // I don't trust this to work as I expect.
-        // A separate thread or ticker to reset count every minute would probably be more reliable but could prove overkill.
-        if (timeDifference.toMinutes() > 1) {
-            requestCount = 0;
+        if (lastRequest != null) {
+            var timeDifference = Duration.between(lastRequest, LocalTime.now());
+            // I don't trust this to work as I expect.
+            // A separate thread or ticker to reset count every minute would probably be more reliable but could prove overkill.
+            if (timeDifference.toMinutes() > 1) {
+                requestCount = 0;
+            }
         }
 
-        if (requestCount > 5) {
+        if (requestCount > MAX_REQUESTS) {
             throw new IllegalStateException(
                 "no more than five request can be made per minute"
             );
@@ -77,7 +85,7 @@ public class Massive {
         var url = new StringBuilder(URL_BASE)
             .append("aggs/ticker/")
             .append(code)
-            .append("range/1/day/")
+            .append("/range/1/day/")
             .append(startString)
             .append('/')
             .append(endString)
@@ -85,7 +93,8 @@ public class Massive {
             .append(key)
             .toString();
 
-        HttpRequest request = HttpRequest.newBuilder()
+        System.out.println(url);
+        var request = HttpRequest.newBuilder()
             .uri(new URI(url))
             .GET()
             .headers("user-agent", USER_AGENT)
@@ -98,7 +107,7 @@ public class Massive {
         );
 
         requestCount++;
-        lastRequst = LocalTime.now();
+        lastRequest = LocalTime.now();
 
         int status = response.statusCode();
         if (status != 200) {

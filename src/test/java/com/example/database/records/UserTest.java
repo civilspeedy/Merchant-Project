@@ -53,7 +53,9 @@ public class UserTest {
     @Test
     public void passwordTooBigException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> {
-            new User(SAFE_STRING, randomLargeString());
+            var pswrd = randomLargeString();
+            System.out.println("password length: " + pswrd.length());
+            new User(SAFE_STRING, pswrd);
         });
 
         assertEquals("password length cannot exceed 90", ex.getMessage());

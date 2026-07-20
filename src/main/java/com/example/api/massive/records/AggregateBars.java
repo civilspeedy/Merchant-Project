@@ -18,7 +18,7 @@ public record AggregateBars(
         @JsonProperty("c") double closePrice,
         @JsonProperty("h") double highestPrice,
         @JsonProperty("l") double lowestPrice,
-        @JsonProperty("t") int timestamp,
+        @JsonProperty("t") long timestamp,
         @JsonProperty("n") int transactions
     ) {}
 }
