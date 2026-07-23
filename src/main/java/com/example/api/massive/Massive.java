@@ -17,7 +17,7 @@ public class Massive {
     private static HttpClient client = HttpClient.newBuilder().build();
     private static final String USER_AGENT = "Mozilla/5.0 (Java-HttpClient)";
     private static final String ACCEPT = "application/json";
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper();
     private static final byte MAX_REQUESTS = 5;
     private static byte requestCount = 0;
     private static LocalTime lastRequest = null;
@@ -113,7 +113,7 @@ public class Massive {
         if (status != 200) {
             throw new IOException("http request failure: " + status);
         }
-        return objectMapper.readValue(response.body(), AggregateBars.class);
+        return mapper.readValue(response.body(), AggregateBars.class);
     }
 
     public static void setKey(String k) throws IllegalArgumentException {

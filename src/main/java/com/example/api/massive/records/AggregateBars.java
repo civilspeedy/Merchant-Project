@@ -11,7 +11,7 @@ public record AggregateBars(
     boolean adjusted,
     Result[] results
 ) {
-    private record Result(
+    public record Result(
         @JsonProperty("v") double tradingVolume,
         @JsonProperty("vw") double volumeWeightedAveragePrice,
         @JsonProperty("o") double openPrice,
@@ -21,4 +21,16 @@ public record AggregateBars(
         @JsonProperty("t") long timestamp,
         @JsonProperty("n") int transactions
     ) {}
+
+    @Override
+    public String toString() {
+        return String.format(
+            "AggregateBars[ticker=%s, queryCount=%d, resultsCount=%d, adjusted=%b, results=%s]",
+            ticker,
+            queryCount,
+            resultsCount,
+            adjusted,
+            java.util.Arrays.toString(results)
+        );
+    }
 }
