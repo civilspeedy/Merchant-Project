@@ -88,19 +88,19 @@ public class App {
     }
 
     private static void showSettingsDialog(JFrame parent) {
-        JDialog settingsDialog = new JDialog(parent, "Settings", true);
+        var settingsDialog = new JDialog(parent, "Settings", true);
         settingsDialog.setSize(400, 300);
         settingsDialog.setLocationRelativeTo(parent);
         settingsDialog.setLayout(new BorderLayout());
 
         // Create settings panel
-        JPanel settingsPanel = new JPanel(new GridLayout(0, 1, 10, 10));
+        var settingsPanel = new JPanel(new GridLayout(0, 1, 10, 10));
         settingsPanel.setBorder(
             BorderFactory.createEmptyBorder(20, 20, 20, 20)
         );
 
         // Theme toggle
-        JButton themeToggle = new JButton(
+        var themeToggle = new JButton(
             darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
         );
         themeToggle.addActionListener(e -> {
@@ -114,12 +114,12 @@ public class App {
         });
 
         // API Key input
-        JPanel apiPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        var apiPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         apiPanel.add(new JLabel("API Key:"));
-        JTextField apiField = new JTextField(apiKey, 20);
+        var apiField = new JTextField(apiKey, 20);
         apiPanel.add(apiField);
 
-        JButton saveApiButton = new JButton("Save API Key");
+        var saveApiButton = new JButton("Save API Key");
         saveApiButton.addActionListener(e -> {
             apiKey = apiField.getText();
             System.out.println("API Key saved: " + apiKey);
@@ -145,8 +145,8 @@ public class App {
             // JFrame defaults to decorated=true, which shows native window controls
 
             // Top panel with search
-            JPanel topPanel = new JPanel(new BorderLayout());
-            JTextField searchField = new JTextField();
+            var topPanel = new JPanel(new BorderLayout());
+            var searchField = new JTextField();
             searchField.setPreferredSize(new Dimension(300, 30));
             searchField.setToolTipText("Search...");
             topPanel.add(searchField, BorderLayout.CENTER);
@@ -160,12 +160,12 @@ public class App {
             topPanel.add(settingsButton, BorderLayout.EAST);
 
             // Graph display area (placeholder)
-            JPanel graphPanel = new JPanel();
+            var graphPanel = new JPanel();
             graphPanel.setBorder(
                 BorderFactory.createTitledBorder("Graph Display")
             );
             graphPanel.setPreferredSize(new Dimension(800, 600));
-            JLabel graphLabel = new JLabel(
+            var graphLabel = new JLabel(
                 "Graph will be displayed here",
                 JLabel.CENTER
             );
