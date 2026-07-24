@@ -2,6 +2,7 @@ package com.example.api.massive.records;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Arrays;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record AggregateBars(
@@ -30,7 +31,7 @@ public record AggregateBars(
             queryCount,
             resultsCount,
             adjusted,
-            java.util.Arrays.toString(results)
+            Arrays.toString(results)
         );
     }
 }
