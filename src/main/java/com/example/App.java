@@ -50,18 +50,32 @@ public class App {
 
     private static void applyTheme() {
         try {
+            UIManager.setLookAndFeel(
+                "javax.swing.plaf.nimbus.NimbusLookAndFeel"
+            );
+
             if (darkMode) {
-                UIManager.setLookAndFeel(
-                    "javax.swing.plaf.nimbus.NimbusLookAndFeel"
-                );
+                // Dark mode colors
                 UIManager.put("control", new Color(60, 63, 65));
                 UIManager.put("text", new Color(214, 217, 223));
-            } else {
-                UIManager.setLookAndFeel(
-                    "javax.swing.plaf.nimbus.NimbusLookAndFeel"
+                UIManager.put("Button.background", new Color(70, 73, 75));
+                UIManager.put("Button.foreground", new Color(230, 230, 230));
+                UIManager.put("Button.focus", new Color(100, 149, 237));
+                UIManager.put("TextField.background", new Color(50, 53, 55));
+                UIManager.put("TextField.foreground", new Color(220, 220, 220));
+                UIManager.put(
+                    "TextField.border",
+                    BorderFactory.createLineBorder(new Color(100, 100, 100))
                 );
+            } else {
+                // Light mode colors
                 UIManager.put("control", new Color(240, 240, 240));
                 UIManager.put("text", new Color(0, 0, 0));
+                UIManager.put("Button.background", new Color(230, 230, 230));
+                UIManager.put("Button.foreground", new Color(30, 30, 30));
+                UIManager.put("Button.focus", new Color(0, 51, 153));
+                UIManager.put("TextField.background", new Color(255, 255, 255));
+                UIManager.put("TextField.foreground", new Color(0, 0, 0));
             }
         } catch (
             ClassNotFoundException
