@@ -30,27 +30,24 @@ public class App {
     private static String apiKey = "";
 
     // Color constants for theme management
-    private static class Colors {
+    // Dark mode colors
+    private static final Color DARK_CONTROL = new Color(60, 63, 65);
+    private static final Color DARK_TEXT = new Color(214, 217, 223);
+    private static final Color DARK_BUTTON_BG = new Color(70, 73, 75);
+    private static final Color DARK_BUTTON_FG = new Color(230, 230, 230);
+    private static final Color DARK_BUTTON_FOCUS = new Color(100, 149, 237);
+    private static final Color DARK_TEXTFIELD_BG = new Color(50, 53, 55);
+    private static final Color DARK_TEXTFIELD_FG = new Color(220, 220, 220);
+    private static final Color DARK_BORDER = new Color(100, 100, 100);
 
-        // Dark mode colors
-        static final Color DARK_CONTROL = new Color(60, 63, 65);
-        static final Color DARK_TEXT = new Color(214, 217, 223);
-        static final Color DARK_BUTTON_BG = new Color(70, 73, 75);
-        static final Color DARK_BUTTON_FG = new Color(230, 230, 230);
-        static final Color DARK_BUTTON_FOCUS = new Color(100, 149, 237);
-        static final Color DARK_TEXTFIELD_BG = new Color(50, 53, 55);
-        static final Color DARK_TEXTFIELD_FG = new Color(220, 220, 220);
-        static final Color DARK_BORDER = new Color(100, 100, 100);
-
-        // Light mode colors
-        static final Color LIGHT_CONTROL = new Color(240, 240, 240);
-        static final Color LIGHT_TEXT = new Color(0, 0, 0);
-        static final Color LIGHT_BUTTON_BG = new Color(230, 230, 230);
-        static final Color LIGHT_BUTTON_FG = new Color(30, 30, 30);
-        static final Color LIGHT_BUTTON_FOCUS = new Color(0, 51, 153);
-        static final Color LIGHT_TEXTFIELD_BG = new Color(255, 255, 255);
-        static final Color LIGHT_TEXTFIELD_FG = new Color(0, 0, 0);
-    }
+    // Light mode colors
+    private static final Color LIGHT_CONTROL = new Color(240, 240, 240);
+    private static final Color LIGHT_TEXT = new Color(0, 0, 0);
+    private static final Color LIGHT_BUTTON_BG = new Color(230, 230, 230);
+    private static final Color LIGHT_BUTTON_FG = new Color(30, 30, 30);
+    private static final Color LIGHT_BUTTON_FOCUS = new Color(0, 51, 153);
+    private static final Color LIGHT_TEXTFIELD_BG = new Color(255, 255, 255);
+    private static final Color LIGHT_TEXTFIELD_FG = new Color(0, 0, 0);
 
     private static enum Icon {
         SETTINGS("settings.png", "Settings cog");
@@ -79,32 +76,26 @@ public class App {
 
             if (darkMode) {
                 // Dark mode colors
-                UIManager.put("control", Colors.DARK_CONTROL);
-                UIManager.put("text", Colors.DARK_TEXT);
-                UIManager.put("Button.background", Colors.DARK_BUTTON_BG);
-                UIManager.put("Button.foreground", Colors.DARK_BUTTON_FG);
-                UIManager.put("Button.focus", Colors.DARK_BUTTON_FOCUS);
-                UIManager.put("TextField.background", Colors.DARK_TEXTFIELD_BG);
-                UIManager.put("TextField.foreground", Colors.DARK_TEXTFIELD_FG);
+                UIManager.put("control", DARK_CONTROL);
+                UIManager.put("text", DARK_TEXT);
+                UIManager.put("Button.background", DARK_BUTTON_BG);
+                UIManager.put("Button.foreground", DARK_BUTTON_FG);
+                UIManager.put("Button.focus", DARK_BUTTON_FOCUS);
+                UIManager.put("TextField.background", DARK_TEXTFIELD_BG);
+                UIManager.put("TextField.foreground", DARK_TEXTFIELD_FG);
                 UIManager.put(
                     "TextField.border",
-                    BorderFactory.createLineBorder(Colors.DARK_BORDER)
+                    BorderFactory.createLineBorder(DARK_BORDER)
                 );
             } else {
                 // Light mode colors
-                UIManager.put("control", Colors.LIGHT_CONTROL);
-                UIManager.put("text", Colors.LIGHT_TEXT);
-                UIManager.put("Button.background", Colors.LIGHT_BUTTON_BG);
-                UIManager.put("Button.foreground", Colors.LIGHT_BUTTON_FG);
-                UIManager.put("Button.focus", Colors.LIGHT_BUTTON_FOCUS);
-                UIManager.put(
-                    "TextField.background",
-                    Colors.LIGHT_TEXTFIELD_BG
-                );
-                UIManager.put(
-                    "TextField.foreground",
-                    Colors.LIGHT_TEXTFIELD_FG
-                );
+                UIManager.put("control", LIGHT_CONTROL);
+                UIManager.put("text", LIGHT_TEXT);
+                UIManager.put("Button.background", LIGHT_BUTTON_BG);
+                UIManager.put("Button.foreground", LIGHT_BUTTON_FG);
+                UIManager.put("Button.focus", LIGHT_BUTTON_FOCUS);
+                UIManager.put("TextField.background", LIGHT_TEXTFIELD_BG);
+                UIManager.put("TextField.foreground", LIGHT_TEXTFIELD_FG);
             }
         } catch (
             ClassNotFoundException
