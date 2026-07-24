@@ -141,6 +141,9 @@ public class App {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLayout(new BorderLayout());
 
+            // Use native OS window decorations (minimize, maximize, close buttons)
+            // JFrame defaults to decorated=true, which shows native window controls
+
             // Top panel with search
             JPanel topPanel = new JPanel(new BorderLayout());
             JTextField searchField = new JTextField();
