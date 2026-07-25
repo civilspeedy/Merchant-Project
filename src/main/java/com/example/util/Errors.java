@@ -15,22 +15,13 @@ public final class Errors {
     private static final int EX_MAX = 12;
 
     public static final void checkInventoryRecord(
-        int userId,
         String code,
         String exchange,
         double quantity
     ) throws IllegalArgumentException {
-        checkUserId(userId);
         checkCode(code);
         checkExchange(exchange);
         checkQuantity(quantity);
-    }
-
-    private static final void checkUserId(int userId)
-        throws IllegalArgumentException {
-        if (userId < 1) {
-            throw new IllegalArgumentException("userId cannot be less than 1");
-        }
     }
 
     private static final void checkCode(String code)
@@ -67,13 +58,12 @@ public final class Errors {
     }
 
     public static final void checkTransactionRecord(
-        int userId,
         String code,
         String exchange,
         double quantity,
         double price
     ) throws IllegalArgumentException {
-        checkInventoryRecord(userId, code, exchange, quantity);
+        checkInventoryRecord(code, exchange, quantity);
         checkPrice(price);
     }
 

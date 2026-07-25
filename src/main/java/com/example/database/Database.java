@@ -111,9 +111,7 @@ public final class Database {
     }
 
     public static enum Select {
-        PASSWORD("password", "users/selectUserPassword.sql"),
-        USER_ID("id", "users/selectUserId.sql"),
-        USERNAMES("username", "users/selectAllUsernames.sql"),
+        PASSWORD("password", "users/selectPassword.sql"),
         ALL_INVENT("*", "inventory/selectAllInventory.sql"),
         ALL_TRANS("*", "transactions/selectAllTransactions.sql");
 

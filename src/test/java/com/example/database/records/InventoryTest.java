@@ -11,32 +11,12 @@ public class InventoryTest {
 
     private static final String BLANK = "00000";
     private static final String STR_TOO_BIG = "This is a string value too big!";
-    private static final int SAFE_ID = 1;
     private static final double SAFE_DOUBLE = 1.6;
     private static Inventory testInventory;
 
     @BeforeAll
     public static void setUp() {
-        testInventory = new Inventory(SAFE_ID, "AAPL", "NASDAQ", SAFE_DOUBLE);
-    }
-
-    /**
-     * Correctly construct an Inventory record without throwing an {@link IllegalArgumentException}.
-     */
-    @Test
-    public void testConstruct() {
-        new Inventory(SAFE_ID, "AAPL", "NASDAQ", SAFE_DOUBLE);
-    }
-
-    /**
-     * Correctly throw an {@link IllegalArgumentException} when userId is too small.
-     */
-    @Test
-    public void userIdTooSmallException() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> {
-            new Inventory(Integer.MIN_VALUE, BLANK, BLANK, SAFE_DOUBLE);
-        });
-        assertEquals("userId cannot be less than 1", ex.getMessage());
+        testInventory = new Inventory("AAPL", "NASDAQ", SAFE_DOUBLE);
     }
 
     /**
@@ -45,7 +25,7 @@ public class InventoryTest {
     @Test
     public void codeTooBigException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> {
-            new Inventory(SAFE_ID, STR_TOO_BIG, BLANK, SAFE_DOUBLE);
+            new Inventory(STR_TOO_BIG, BLANK, SAFE_DOUBLE);
         });
         assertEquals("code length cannot exceed 5", ex.getMessage());
     }
@@ -56,7 +36,7 @@ public class InventoryTest {
     @Test
     public void codeTooSmallException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> {
-            new Inventory(SAFE_ID, "", BLANK, SAFE_DOUBLE);
+            new Inventory("", BLANK, SAFE_DOUBLE);
         });
         assertEquals("code cannot be empty or null ", ex.getMessage());
     }
@@ -67,7 +47,7 @@ public class InventoryTest {
     @Test
     public void exchangeTooBigException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> {
-            new Inventory(SAFE_ID, BLANK, STR_TOO_BIG, SAFE_DOUBLE);
+            new Inventory(BLANK, STR_TOO_BIG, SAFE_DOUBLE);
         });
         assertEquals("exchange length cannot exceed 12", ex.getMessage());
     }
@@ -78,7 +58,7 @@ public class InventoryTest {
     @Test
     public void exchangeTooSmallException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> {
-            new Inventory(SAFE_ID, BLANK, "", SAFE_DOUBLE);
+            new Inventory(BLANK, "", SAFE_DOUBLE);
         });
         assertEquals("exchange cannot be empty or null ", ex.getMessage());
     }
@@ -89,7 +69,7 @@ public class InventoryTest {
     @Test
     public void quantityTooBigException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> {
-            new Inventory(SAFE_ID, BLANK, BLANK, Double.MAX_VALUE);
+            new Inventory(BLANK, BLANK, Double.MAX_VALUE);
         });
         assertEquals("quantity cannot exceed 1.0E38", ex.getMessage());
     }
@@ -100,7 +80,7 @@ public class InventoryTest {
     @Test
     public void quantityTooSmallException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> {
-            new Inventory(SAFE_ID, BLANK, BLANK, Double.NEGATIVE_INFINITY);
+            new Inventory(BLANK, BLANK, Double.NEGATIVE_INFINITY);
         });
         assertEquals(
             "quantity cannot be less than or equal to 0 ",
@@ -114,7 +94,6 @@ public class InventoryTest {
     @Test
     public void testGetFieldArray() {
         String[] expectedArray = new String[] {
-            String.valueOf(SAFE_ID),
             "AAPL",
             "NASDAQ",
             String.valueOf(SAFE_DOUBLE),

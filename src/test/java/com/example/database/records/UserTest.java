@@ -28,34 +28,11 @@ public class UserTest {
     }
 
     @Test
-    public void testConstruct() {
-        new User("normal username", "normal password");
-    }
-
-    @Test
-    public void usernameTooBigException() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> {
-            new User(randomLargeString(), SAFE_STRING);
-        });
-
-        assertEquals("username length cannot exceed 50", ex.getMessage());
-    }
-
-    @Test
-    public void usernameTooSmallException() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> {
-            new User("", SAFE_STRING);
-        });
-
-        assertEquals("username cannot be empty or null", ex.getMessage());
-    }
-
-    @Test
     public void passwordTooBigException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> {
             var pswrd = randomLargeString();
             System.out.println("password length: " + pswrd.length());
-            new User(SAFE_STRING, pswrd);
+            new User(pswrd);
         });
 
         assertEquals("password length cannot exceed 90", ex.getMessage());
@@ -64,7 +41,7 @@ public class UserTest {
     @Test
     public void passwordTooSmallException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> {
-            new User(SAFE_STRING, "");
+            new User("");
         });
 
         assertEquals("password cannot be empty or null", ex.getMessage());
@@ -72,8 +49,8 @@ public class UserTest {
 
     @Test
     public void testGetFieldArray() {
-        User testUser = new User(SAFE_STRING, SAFE_STRING);
-        String[] expectedArray = new String[] { SAFE_STRING, SAFE_STRING };
+        User testUser = new User(SAFE_STRING);
+        String[] expectedArray = new String[] { SAFE_STRING };
         assertArrayEquals(expectedArray, testUser.getFieldArray());
     }
 }
