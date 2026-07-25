@@ -13,6 +13,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -48,6 +49,10 @@ public class App {
     private static final Color LIGHT_BUTTON_FOCUS = new Color(0, 51, 153);
     private static final Color LIGHT_TEXTFIELD_BG = new Color(255, 255, 255);
     private static final Color LIGHT_TEXTFIELD_FG = new Color(0, 0, 0);
+    private static final String SWITCH_TO_DARK = "Switch to Dark Theme";
+    private static final String SWITCH_TO_LIGHT = "Switch to Light Theme";
+    private static final Dimension SEARCH_FIELD_SIZE = new Dimension(300, 30);
+    private static final Dimension GRAPH_SIZE = new Dimension(800, 600);
 
     private static enum Icon {
         SETTINGS("settings.png", "Settings cog");
@@ -97,12 +102,7 @@ public class App {
                 UIManager.put("TextField.background", LIGHT_TEXTFIELD_BG);
                 UIManager.put("TextField.foreground", LIGHT_TEXTFIELD_FG);
             }
-        } catch (
-            ClassNotFoundException
-            | InstantiationException
-            | IllegalAccessException
-            | UnsupportedLookAndFeelException e
-        ) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -121,13 +121,11 @@ public class App {
 
         // Theme toggle
         var themeToggle = new JButton(
-            darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
+            darkMode ? SWITCH_TO_LIGHT : SWITCH_TO_DARK
         );
         themeToggle.addActionListener(e -> {
             darkMode = !darkMode;
-            themeToggle.setText(
-                darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
-            );
+            themeToggle.setText(darkMode ? SWITCH_TO_LIGHT : SWITCH_TO_DARK);
             applyTheme();
             SwingUtilities.updateComponentTreeUI(parent);
             SwingUtilities.updateComponentTreeUI(settingsDialog);
@@ -135,13 +133,13 @@ public class App {
 
         // API Key input
         var apiPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        apiPanel.add(new JLabel("API Key:"));
-        var apiField = new JTextField(apiKey, 20);
+        apiPanel.add(new JLabel("Massive API Key:"));
+        var apiField = new JPasswordField(apiKey, 20);
         apiPanel.add(apiField);
 
         var saveApiButton = new JButton("Save API Key");
         saveApiButton.addActionListener(e -> {
-            apiKey = apiField.getText();
+            apiKey = new String(apiField.getPassword()); // should not be stored as plaintext
             System.out.println("API Key saved: " + apiKey);
         });
 
@@ -167,7 +165,7 @@ public class App {
             // Top panel with search
             var topPanel = new JPanel(new BorderLayout());
             var searchField = new JTextField();
-            searchField.setPreferredSize(new Dimension(300, 30));
+            searchField.setPreferredSize(SEARCH_FIELD_SIZE);
             searchField.setToolTipText("Search...");
             topPanel.add(searchField, BorderLayout.CENTER);
 
@@ -184,7 +182,7 @@ public class App {
             graphPanel.setBorder(
                 BorderFactory.createTitledBorder("Graph Display")
             );
-            graphPanel.setPreferredSize(new Dimension(800, 600));
+            graphPanel.setPreferredSize(GRAPH_SIZE);
             var graphLabel = new JLabel(
                 "Graph will be displayed here",
                 JLabel.CENTER
