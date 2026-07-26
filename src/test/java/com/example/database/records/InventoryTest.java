@@ -93,7 +93,7 @@ public class InventoryTest {
      */
     @Test
     public void testGetFieldArray() {
-        String[] expectedArray = new String[] {
+        var expectedArray = new String[] {
             "AAPL",
             "NASDAQ",
             String.valueOf(SAFE_DOUBLE),

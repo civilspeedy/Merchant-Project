@@ -30,7 +30,7 @@ public final class Errors {
             throw new IllegalArgumentException(
                 "code length cannot exceed " + CODE_MAX
             );
-        } else if (code.length() == 0 || code == null) {
+        } else if (code.isEmpty() || code.isBlank() || code == null) {
             throw new IllegalArgumentException("code" + EMPTY_NULL);
         }
     }
@@ -41,7 +41,9 @@ public final class Errors {
             throw new IllegalArgumentException(
                 "exchange length cannot exceed " + EX_MAX
             );
-        } else if (exchange.length() == 0 || exchange == null) {
+        } else if (
+            exchange.isBlank() || exchange.isEmpty() || exchange == null
+        ) {
             throw new IllegalArgumentException("exchange" + EMPTY_NULL);
         }
     }

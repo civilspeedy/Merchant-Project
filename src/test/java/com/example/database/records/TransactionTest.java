@@ -37,7 +37,7 @@ public class TransactionTest {
 
     @Test
     public void testGetFieldArray() {
-        String[] expectArray = new String[] {
+        var expectArray = new String[] {
             "AAPL",
             "NASDAQ",
             "30.0",

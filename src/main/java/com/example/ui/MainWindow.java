@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -165,6 +166,27 @@ public class MainWindow {
             if (!pass.equals(confirm)) {
                 warnLabel.setText("Passwords do not match!");
             } else {
+                int response = JOptionPane.showConfirmDialog(
+                    dialog,
+                    "Are you sure? This will erase all existing data.",
+                    "Are you sure?",
+                    JOptionPane.YES_NO_CANCEL_OPTION
+                );
+
+                switch (response) {
+                    case JOptionPane.YES_OPTION:
+                        System.out.println("Yes");
+                        break;
+                    case JOptionPane.NO_OPTION:
+                        System.out.println("No");
+                        break;
+                    case JOptionPane.CANCEL_OPTION:
+                        System.out.println("Cancel");
+                        break;
+                    default:
+                        System.out.println("Default");
+                        break;
+                }
             }
         });
 

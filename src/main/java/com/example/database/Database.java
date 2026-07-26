@@ -6,11 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 public final class Database {
@@ -44,9 +41,9 @@ public final class Database {
         }
         String sql = getQuery("/sql/create/createTables.sql");
         String[] queries = sql.split(";");
-        Statement statement = connection.createStatement();
+        var statement = connection.createStatement();
 
-        for (String query : queries) {
+        for (var query : queries) {
             statement.addBatch(query + ";");
         }
         statement.executeBatch();
@@ -77,7 +74,7 @@ public final class Database {
 
         String sql = getQuery("/sql/insert/" + queryType.path);
 
-        PreparedStatement statement = connection.prepareStatement(sql);
+        var statement = connection.prepareStatement(sql);
         String[] fields = data.getFieldArray();
 
         for (int i = 0; i < fields.length; i++) {
@@ -104,7 +101,7 @@ public final class Database {
 
     public static final void dropAll() throws SQLException {
         log.out("dropping all tables");
-        Statement statement = connection.createStatement();
+        var statement = connection.createStatement();
         statement.execute(DROP_ALL_OBJECTS);
         statement.close();
         connection.commit();
@@ -127,18 +124,18 @@ public final class Database {
     public static final String[] select(Select selection, String target)
         throws Exception {
         String sql = getQuery("/sql/select/" + selection.path);
-        PreparedStatement statement = connection.prepareStatement(sql);
+        var statement = connection.prepareStatement(sql);
         if (target != null) {
             statement.setString(1, target);
         }
 
         ResultSet result = statement.executeQuery();
 
-        ArrayList<String> results = new ArrayList<String>();
+        var results = new ArrayList<String>();
         if (selection.label.equals("*")) {
             while (result.next()) {
-                StringBuilder rowString = new StringBuilder();
-                ResultSetMetaData meta = result.getMetaData();
+                var rowString = new StringBuilder();
+                var meta = result.getMetaData();
 
                 for (int i = 1; i <= meta.getColumnCount(); i++) {
                     if (i > 1) {

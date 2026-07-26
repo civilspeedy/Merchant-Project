@@ -63,7 +63,7 @@ public class DatabaseTest {
         String result = results[0];
         String[] actualArray = result.split(",");
 
-        String[] expectedArray = new String[] {
+        var expectedArray = new String[] {
             SAFE_USER_STR,
             SAFE_CODE,
             SAFE_EXCHANGE,
@@ -84,7 +84,7 @@ public class DatabaseTest {
         String result = results[0];
         String[] actualArray = result.split(",");
         int numVals = actualArray.length;
-        String[] expectedArray = new String[] {
+        var expectedArray = new String[] {
             SAFE_USER_STR,
             SAFE_CODE,
             SAFE_EXCHANGE,

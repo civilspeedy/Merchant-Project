@@ -17,10 +17,10 @@ public class UserTest {
     private static String randomLargeString() {
         int size = rnd.nextInt(1000 - MAX_USR_SIZE) + MAX_USR_SIZE;
 
-        StringBuilder stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder();
 
         for (int i = 0; i < size; i++) {
-            char rndChar = (char) rnd.nextInt(UNICODE_MAX + 0 - 1);
+            var rndChar = (char) rnd.nextInt(UNICODE_MAX + 0 - 1);
             stringBuilder.append(rndChar);
         }
 
@@ -49,8 +49,8 @@ public class UserTest {
 
     @Test
     public void testGetFieldArray() {
-        User testUser = new User(SAFE_STRING);
-        String[] expectedArray = new String[] { SAFE_STRING };
+        var testUser = new User(SAFE_STRING);
+        var expectedArray = new String[] { SAFE_STRING };
         assertArrayEquals(expectedArray, testUser.getFieldArray());
     }
 }
