@@ -3,7 +3,6 @@ package com.example.ui;
 import com.example.util.Exit;
 import com.example.util.Resource;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -133,13 +132,30 @@ public class MainWindow {
         return dialog;
     }
 
+    private static JPanel newChildPanel(Component[] components) {
+        var panel = new JPanel(new FlowLayout(FlowLayout.LEFT), DOUBLE_BUFFER);
+        addToPanel(panel, components);
+        return panel;
+    }
+
     private static void showNewUserDialog(JFrame parent) {
         var dialog = newModal(NEW_USER, parent);
         var panel = new JPanel(MODAL_GRID, DOUBLE_BUFFER);
-        var firstLabel = new JLabel("New Password:");
+
+        var passwordLabel = new JLabel("New Password:");
         var passwordField = new JPasswordField(DEFAULT_INPUT_COLUMNS);
-        var secondLabel = new JLabel("Confirm Password:");
+        var passwordPanel = newChildPanel(new Component[] {
+            passwordLabel,
+            passwordField,
+        });
+
+        var confirmLabel = new JLabel("Confirm Password:");
         var confirmField = new JPasswordField(DEFAULT_INPUT_COLUMNS);
+        var confirmPanel = newChildPanel(new Component[] {
+            confirmLabel,
+            confirmField,
+        });
+
         var warnLabel = new JLabel("");
         var submitButton = new JButton("Submit");
         submitButton.addActionListener(e -> {
@@ -151,6 +167,19 @@ public class MainWindow {
             } else {
             }
         });
+
+        var bottomPanel = newChildPanel(new Component[] {
+            warnLabel,
+            submitButton,
+        });
+
+        addToPanel(panel, new Component[] {
+            passwordPanel,
+            confirmPanel,
+            bottomPanel,
+        });
+        dialog.add(panel, BorderLayout.CENTER);
+        dialog.setVisible(true);
     }
 
     private static void showLoginDialog(JFrame parent) {
@@ -165,9 +194,17 @@ public class MainWindow {
 
         var newUserButton = new JButton(NEW_USER);
         newUserButton.setPreferredSize(TEXT_BUTTON_SIZE);
-        submitButton.addActionListener(e -> {});
+        newUserButton.addActionListener(e -> {
+            dialog.setVisible(false);
+            showNewUserDialog(parent);
+            // need to reopen login if new user is closed
+        });
 
-        var components = new Component[] { passwordField, submitButton };
+        var components = new Component[] {
+            passwordField,
+            submitButton,
+            newUserButton,
+        };
         addToPanel(panel, components);
         dialog.add(panel, BorderLayout.CENTER);
         dialog.setVisible(true);
