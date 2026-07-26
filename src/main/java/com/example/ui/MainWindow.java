@@ -1,6 +1,6 @@
 package com.example.ui;
 
-import com.example.ThemeValue;
+import com.example.util.Exit;
 import com.example.util.Resource;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -21,20 +21,33 @@ import javax.swing.UIManager;
 
 public class MainWindow {
 
+    // Size
     private static final Dimension WINDOW_SIZE = new Dimension(1920, 1080);
     private static final Dimension MODAL_SIZE = new Dimension(854, 480);
-    private static final String SWITCH_TO_DARK = "Switch to Dark Theme";
-    private static final String SWITCH_TO_LIGHT = "Switch to Light Theme";
     private static final Dimension SEARCH_FIELD_SIZE = new Dimension(300, 30);
     private static final Dimension GRAPH_SIZE = new Dimension(800, 600);
+    private static final Dimension TEXT_BUTTON_SIZE = new Dimension(100, 65);
+    private static final Dimension ICON_BUTTON_SIZE = new Dimension(75, 75);
+    private static final int DEFAULT_INPUT_COLUMNS = 20; // they are still way to big
+
+    // Grid
+    private static final GridLayout MODAL_GRID = new GridLayout(0, 1, 10, 10);
+
+    // Display Text
+    private static final String SWITCH_TO_DARK = "Switch to Dark Theme";
+    private static final String SWITCH_TO_LIGHT = "Switch to Light Theme";
     private static final String WINDOW_TITLE = "Merchant";
     private static final String SETTINGS_TITLE = "Settings";
     private static final String LOGIN_TITLE = "Login";
+    private static final String NEW_USER = "New User";
+
+    // Theme
     private static boolean darkMode = false;
     private static final String LIGHT_THEME_PATH = "json/lightTheme.json";
     private static final String DARK_THEME_PATH = "json/darkTheme.json";
     private static ThemeValue[] lightTheme;
     private static ThemeValue[] darkTheme;
+    private static final boolean DOUBLE_BUFFER = true;
 
     public static void start() {
         try {
@@ -54,8 +67,8 @@ public class MainWindow {
             // JFrame defaults to decorated=true, which shows native window controls
 
             // Top panel with search
-            var topPanel = new JPanel(new BorderLayout());
-            var searchField = new JTextField();
+            var topPanel = new JPanel(new BorderLayout(), DOUBLE_BUFFER);
+            var searchField = new JTextField(DEFAULT_INPUT_COLUMNS);
             searchField.setPreferredSize(SEARCH_FIELD_SIZE);
             searchField.setToolTipText("Search...");
             topPanel.add(searchField, BorderLayout.CENTER);
@@ -65,6 +78,7 @@ public class MainWindow {
                 Resource.getIcon(Resource.Icon.SETTINGS)
             );
             settingsButton.setToolTipText("Settings");
+            settingsButton.setPreferredSize(ICON_BUTTON_SIZE);
             settingsButton.addActionListener(event -> {
                 showSettingsDialog(frame);
             });
@@ -88,6 +102,8 @@ public class MainWindow {
             frame.setSize(WINDOW_SIZE);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
+
+            showLoginDialog(frame);
         });
     }
 
@@ -96,22 +112,17 @@ public class MainWindow {
             UIManager.setLookAndFeel(
                 "javax.swing.plaf.nimbus.NimbusLookAndFeel"
             );
-
-            var activeTheme = darkMode ? darkTheme : lightTheme;
-
-            for (var theme : activeTheme) {
-                var key = theme.name().replace('_', '.');
-                UIManager.put(key, new Color(theme.r(), theme.g(), theme.b()));
-            }
         } catch (Exception e) {
             e.printStackTrace();
+            System.exit(Exit.ERR.code);
         }
+
+        ThemeValue[] theme = darkMode ? darkTheme : lightTheme;
+        for (var t : theme) UIManager.put(t.key(), t.color());
     }
 
     private static void addToPanel(JPanel panel, Component[] components) {
-        for (var component : components) {
-            panel.add(component);
-        }
+        for (var c : components) panel.add(c);
     }
 
     private static JDialog newModal(String title, JFrame parent) {
@@ -122,22 +133,52 @@ public class MainWindow {
         return dialog;
     }
 
-    private static void showLoginDialog(JFrame parent) {
-        var loginDialog = newModal(LOGIN_TITLE, parent);
+    private static void showNewUserDialog(JFrame parent) {
+        var dialog = newModal(NEW_USER, parent);
+        var panel = new JPanel(MODAL_GRID, DOUBLE_BUFFER);
+        var firstLabel = new JLabel("New Password:");
+        var passwordField = new JPasswordField(DEFAULT_INPUT_COLUMNS);
+        var secondLabel = new JLabel("Confirm Password:");
+        var confirmField = new JPasswordField(DEFAULT_INPUT_COLUMNS);
+        var warnLabel = new JLabel("");
+        var submitButton = new JButton("Submit");
+        submitButton.addActionListener(e -> {
+            var pass = new String(passwordField.getPassword());
+            var confirm = new String(confirmField.getPassword());
 
-        var loginPanel = new JPanel(new GridLayout(0, 1, 10, 10));
-        loginPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        var passwordTextBox = new JPasswordField();
+            if (!pass.equals(confirm)) {
+                warnLabel.setText("Passwords do not match!");
+            } else {
+            }
+        });
+    }
+
+    private static void showLoginDialog(JFrame parent) {
+        var dialog = newModal(LOGIN_TITLE, parent);
+
+        var panel = new JPanel(MODAL_GRID, DOUBLE_BUFFER);
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        var passwordField = new JPasswordField(DEFAULT_INPUT_COLUMNS);
+        var submitButton = new JButton("Submit");
+        submitButton.setPreferredSize(TEXT_BUTTON_SIZE);
+        submitButton.addActionListener(e -> {});
+
+        var newUserButton = new JButton(NEW_USER);
+        newUserButton.setPreferredSize(TEXT_BUTTON_SIZE);
+        submitButton.addActionListener(e -> {});
+
+        var components = new Component[] { passwordField, submitButton };
+        addToPanel(panel, components);
+        dialog.add(panel, BorderLayout.CENTER);
+        dialog.setVisible(true);
     }
 
     private static void showSettingsDialog(JFrame parent) {
-        var settingsDialog = newModal(SETTINGS_TITLE, parent);
+        var dialog = newModal(SETTINGS_TITLE, parent);
 
         // Create settings panel
-        var settingsPanel = new JPanel(new GridLayout(0, 1, 10, 10));
-        settingsPanel.setBorder(
-            BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        );
+        var mainPanel = new JPanel(MODAL_GRID, DOUBLE_BUFFER);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Theme toggle
         var themeToggle = new JButton(
@@ -148,14 +189,16 @@ public class MainWindow {
             themeToggle.setText(darkMode ? SWITCH_TO_LIGHT : SWITCH_TO_DARK);
             applyTheme();
             SwingUtilities.updateComponentTreeUI(parent);
-            SwingUtilities.updateComponentTreeUI(settingsDialog);
+            SwingUtilities.updateComponentTreeUI(dialog);
         });
-
         // API Key input
-        var apiPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        apiPanel.add(new JLabel("Massive API Key:"));
-        var apiField = new JPasswordField(20);
-        apiPanel.add(apiField);
+        var childPanel = new JPanel(
+            new FlowLayout(FlowLayout.LEFT),
+            DOUBLE_BUFFER
+        );
+        childPanel.add(new JLabel("Massive API Key:"));
+        var apiField = new JPasswordField(DEFAULT_INPUT_COLUMNS);
+        childPanel.add(apiField);
 
         var saveApiButton = new JButton("Save API Key");
         saveApiButton.addActionListener(e -> {
@@ -164,13 +207,13 @@ public class MainWindow {
 
         var components = new Component[] {
             themeToggle,
-            apiPanel,
+            childPanel,
             saveApiButton,
         };
 
-        addToPanel(settingsPanel, components);
+        addToPanel(mainPanel, components);
 
-        settingsDialog.add(settingsPanel, BorderLayout.CENTER);
-        settingsDialog.setVisible(true);
+        dialog.add(mainPanel, BorderLayout.CENTER);
+        dialog.setVisible(true);
     }
 }

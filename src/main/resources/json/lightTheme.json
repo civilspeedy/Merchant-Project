@@ -1,9 +1,9 @@
 [
-    { "name": "control", "r": 240, "g": 240, "b": 240 },
-    { "name": "text", "r": 0, "g": 0, "b": 0 },
-    { "name": "button_background", "r": 230, "g": 230, "b": 230 },
-    { "name": "button_foreground", "r": 30, "g": 30, "b": 30 },
-    { "name": "button_focus", "r": 0, "g": 51, "b": 153 },
-    { "name": "textfield_background", "r": 255, "g": 255, "b": 255 },
-    { "name": "textfield_foreground", "r": 0, "g": 0, "b": 0 }
+    { "key": "control", "r": 240, "g": 240, "b": 240 },
+    { "key": "text", "r": 0, "g": 0, "b": 0 },
+    { "key": "button.background", "r": 230, "g": 230, "b": 230 },
+    { "key": "button.foreground", "r": 30, "g": 30, "b": 30 },
+    { "key": "button.focus", "r": 0, "g": 51, "b": 153 },
+    { "key": "textfield_background", "r": 255, "g": 255, "b": 255 },
+    { "key": "textfield.foreground", "r": 0, "g": 0, "b": 0 }
 ]
