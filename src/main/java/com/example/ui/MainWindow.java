@@ -163,7 +163,11 @@ public class MainWindow {
             var pass = new String(passwordField.getPassword());
             var confirm = new String(confirmField.getPassword());
 
-            if (!pass.equals(confirm)) {
+            if (pass.isBlank() || pass.isEmpty()) {
+                warnLabel.setText("Password cannot be blank!");
+            } else if (confirm.isBlank() || confirm.isEmpty()) {
+                warnLabel.setText("Please confirm password!");
+            } else if (!pass.equals(confirm)) {
                 warnLabel.setText("Passwords do not match!");
             } else {
                 int response = JOptionPane.showConfirmDialog(
@@ -200,6 +204,7 @@ public class MainWindow {
             confirmPanel,
             bottomPanel,
         });
+
         dialog.add(panel, BorderLayout.CENTER);
         dialog.setVisible(true);
     }
@@ -219,7 +224,7 @@ public class MainWindow {
         newUserButton.addActionListener(e -> {
             dialog.setVisible(false);
             showNewUserDialog(parent);
-            // need to reopen login if new user is closed
+            dialog.setVisible(true);
         });
 
         var components = new Component[] {

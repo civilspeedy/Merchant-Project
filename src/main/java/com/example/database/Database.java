@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public final class Database {
+public class Database {
 
     private static final Log log = new Log("Database");
     private static final String USER = "sa";
@@ -19,13 +19,18 @@ public final class Database {
     private static boolean dbConnected = false;
     private static final String DROP_ALL_OBJECTS = "DROP ALL OBJECTS;";
 
+    Database(String url, String password) throws SQLException {
+        connection = DriverManager.getConnection(url, USER, password);
+        dbConnected = true;
+    }
+
     public static enum Table {
         USER,
         INVENTORY,
         TRANSACTIONS,
     }
 
-    private static final String getQuery(String path) throws IOException {
+    private String getQuery(String path) throws IOException {
         InputStream stream = Database.class.getResourceAsStream(path);
         if (stream == null) {
             throw new IOException(path + " could not be found");
@@ -33,7 +38,7 @@ public final class Database {
         return new String(stream.readAllBytes());
     }
 
-    public static final void createTables() throws Exception {
+    void createTables() throws Exception {
         if (!dbConnected) {
             throw new IllegalStateException(
                 "database has not been connected yet!"
@@ -52,7 +57,7 @@ public final class Database {
         tablesCreated = true;
     }
 
-    public static enum Insert {
+    static enum Insert {
         USER("insertIntoUser.sql"),
         TRANS("insertIntoTrans.sql"),
         INVENT("insertIntoInvent.sql");
@@ -64,8 +69,7 @@ public final class Database {
         }
     }
 
-    public static final void insert(Insert queryType, InputRecord data)
-        throws Exception {
+    void insert(Insert queryType, InputRecord data) throws Exception {
         if (!tablesCreated) {
             throw new IllegalStateException(
                 "tables may not exist! createTables() must run before this method!"
@@ -87,19 +91,13 @@ public final class Database {
         connection.commit();
     }
 
-    public static final void connect(String url, String password)
-        throws SQLException {
-        connection = DriverManager.getConnection(url, USER, password);
-        dbConnected = true;
-    }
-
-    public static final void close() throws SQLException {
+    void close() throws SQLException {
         log.out("closing database");
         connection.commit();
         connection.close();
     }
 
-    public static final void dropAll() throws SQLException {
+    void dropAll() throws SQLException {
         log.out("dropping all tables");
         var statement = connection.createStatement();
         statement.execute(DROP_ALL_OBJECTS);
@@ -107,7 +105,7 @@ public final class Database {
         connection.commit();
     }
 
-    public static enum Select {
+    static enum Select {
         PASSWORD("password", "users/selectPassword.sql"),
         ALL_INVENT("*", "inventory/selectAllInventory.sql"),
         ALL_TRANS("*", "transactions/selectAllTransactions.sql");
@@ -121,8 +119,7 @@ public final class Database {
         }
     }
 
-    public static final String[] select(Select selection, String target)
-        throws Exception {
+    String[] select(Select selection, String target) throws Exception {
         String sql = getQuery("/sql/select/" + selection.path);
         var statement = connection.prepareStatement(sql);
         if (target != null) {

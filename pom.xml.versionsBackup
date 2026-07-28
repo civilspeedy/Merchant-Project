@@ -17,13 +17,13 @@
     <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>
-        <version>6.1.2</version>
+        <version>6.1.0</version>
         <scope>test</scope>
       </dependency>
     <dependency>
         <groupId>tools.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>3.2.1</version>
+        <version>3.2.0</version>
         <scope>compile</scope>
     </dependency>
     <dependency>
