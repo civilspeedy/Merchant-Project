@@ -15,7 +15,6 @@ public class Manager {
     };
 
     public static void newUser(String password) throws SQLException {
-        // need to delete file or would just dropping tables be better?
         for (var db : DB_EXTENSIONS) {
             var path = DB_PATH + db;
             var file = new File(path);
@@ -30,4 +29,10 @@ public class Manager {
 
         database = new Database(DB_URL, password);
     }
+
+    public static void login(String password) throws SQLException {
+        database = new Database(DB_URL, password);
+    }
+
+    public static void newApiKey(String key) {}
 }

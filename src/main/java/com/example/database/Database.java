@@ -25,7 +25,6 @@ public class Database {
     }
 
     public static enum Table {
-        USER,
         INVENTORY,
         TRANSACTIONS,
     }
@@ -58,7 +57,6 @@ public class Database {
     }
 
     static enum Insert {
-        USER("insertIntoUser.sql"),
         TRANS("insertIntoTrans.sql"),
         INVENT("insertIntoInvent.sql");
 
@@ -106,7 +104,6 @@ public class Database {
     }
 
     static enum Select {
-        PASSWORD("password", "users/selectPassword.sql"),
         ALL_INVENT("*", "inventory/selectAllInventory.sql"),
         ALL_TRANS("*", "transactions/selectAllTransactions.sql");
 

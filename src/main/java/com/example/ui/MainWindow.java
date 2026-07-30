@@ -8,6 +8,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.sql.SQLInvalidAuthorizationSpecException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -148,15 +149,18 @@ public class MainWindow {
                 "New user creation successful!"
             );
             // parent needs to close
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(
-                parent,
-                ex.getMessage(),
-                "Something went wrong!",
-                JOptionPane.ERROR_MESSAGE
-            );
+        } catch (Exception e) {
+            showErrorMessage(parent, e);
         }
+    }
+
+    private static void showErrorMessage(Component parent, Exception e) {
+        JOptionPane.showMessageDialog(
+            parent,
+            e.getMessage(),
+            "Something went wrong!",
+            JOptionPane.ERROR_MESSAGE
+        );
     }
 
     private static void showNewUserDialog(JFrame parent) {
@@ -179,7 +183,7 @@ public class MainWindow {
 
         var warnLabel = new JLabel("");
         var submitButton = new JButton("Submit");
-        submitButton.addActionListener(e -> {
+        submitButton.addActionListener(event -> {
             var pass = new String(passwordField.getPassword());
             var confirm = new String(confirmField.getPassword());
 
@@ -197,19 +201,10 @@ public class MainWindow {
                     JOptionPane.YES_NO_OPTION
                 );
 
-                switch (response) {
-                    case JOptionPane.YES_OPTION:
-                        createNewUser(dialog, pass);
-                        break;
-                    case JOptionPane.NO_OPTION:
-                        System.out.println("No");
-                        break;
-                    case JOptionPane.CANCEL_OPTION:
-                        System.out.println("Cancel");
-                        break;
-                    default:
-                        System.out.println("Default");
-                        break;
+                if (response == JOptionPane.YES_OPTION) {
+                    createNewUser(dialog, pass);
+                } else {
+                    System.out.println("No");
                 }
             }
         });
@@ -237,7 +232,16 @@ public class MainWindow {
         var passwordField = new JPasswordField(DEFAULT_INPUT_COLUMNS);
         var submitButton = new JButton("Submit");
         submitButton.setPreferredSize(TEXT_BUTTON_SIZE);
-        submitButton.addActionListener(e -> {});
+        submitButton.addActionListener(event -> {
+            try {
+                Manager.login(new String(passwordField.getPassword()));
+                dialog.dispose();
+            } catch (SQLInvalidAuthorizationSpecException e) {
+                JOptionPane.showMessageDialog(dialog, "Invalid password");
+            } catch (Exception e) {
+                showErrorMessage(dialog, e);
+            }
+        });
 
         var newUserButton = new JButton(NEW_USER);
         newUserButton.setPreferredSize(TEXT_BUTTON_SIZE);
@@ -260,22 +264,20 @@ public class MainWindow {
     private static void showSettingsDialog(JFrame parent) {
         var dialog = newModal(SETTINGS_TITLE, parent);
 
-        // Create settings panel
         var mainPanel = new JPanel(MODAL_GRID, DOUBLE_BUFFER);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Theme toggle
         var themeToggle = new JButton(
             darkMode ? SWITCH_TO_LIGHT : SWITCH_TO_DARK
         );
-        themeToggle.addActionListener(e -> {
+        themeToggle.addActionListener(event -> {
             darkMode = !darkMode;
             themeToggle.setText(darkMode ? SWITCH_TO_LIGHT : SWITCH_TO_DARK);
             applyTheme();
             SwingUtilities.updateComponentTreeUI(parent);
             SwingUtilities.updateComponentTreeUI(dialog);
         });
-        // API Key input
+
         var childPanel = new JPanel(
             new FlowLayout(FlowLayout.LEFT),
             DOUBLE_BUFFER
