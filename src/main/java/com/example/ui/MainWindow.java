@@ -236,8 +236,9 @@ public class MainWindow {
             try {
                 Manager.login(new String(passwordField.getPassword()));
                 dialog.dispose();
+                // trigger load
             } catch (SQLInvalidAuthorizationSpecException e) {
-                JOptionPane.showMessageDialog(dialog, "Invalid password");
+                JOptionPane.showMessageDialog(dialog, "Invalid password!");
             } catch (Exception e) {
                 showErrorMessage(dialog, e);
             }
@@ -286,9 +287,14 @@ public class MainWindow {
         var apiField = new JPasswordField(DEFAULT_INPUT_COLUMNS);
         childPanel.add(apiField);
 
+        var warnLabel = new JLabel("");
+
         var saveApiButton = new JButton("Save API Key");
         saveApiButton.addActionListener(e -> {
             var apiKey = new String(apiField.getPassword()); // should not be stored as plaintext
+            if (apiKey.isEmpty() || apiKey.isBlank()) {
+                warnLabel.setText("API key cannot be empty or blank!");
+            }
         });
 
         var components = new Component[] {
