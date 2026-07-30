@@ -1,5 +1,6 @@
 package com.example.ui;
 
+import com.example.database.Manager;
 import com.example.util.Exit;
 import com.example.util.Resource;
 import java.awt.BorderLayout;
@@ -139,6 +140,25 @@ public class MainWindow {
         return panel;
     }
 
+    private static void createNewUser(Component parent, String password) {
+        try {
+            Manager.newUser(password);
+            JOptionPane.showMessageDialog(
+                parent,
+                "New user creation successful!"
+            );
+            // parent needs to close
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(
+                parent,
+                ex.getMessage(),
+                "Something went wrong!",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
     private static void showNewUserDialog(JFrame parent) {
         var dialog = newModal(NEW_USER, parent);
         var panel = new JPanel(MODAL_GRID, DOUBLE_BUFFER);
@@ -174,12 +194,12 @@ public class MainWindow {
                     dialog,
                     "Are you sure? This will erase all existing data.",
                     "Are you sure?",
-                    JOptionPane.YES_NO_CANCEL_OPTION
+                    JOptionPane.YES_NO_OPTION
                 );
 
                 switch (response) {
                     case JOptionPane.YES_OPTION:
-                        System.out.println("Yes");
+                        createNewUser(dialog, pass);
                         break;
                     case JOptionPane.NO_OPTION:
                         System.out.println("No");

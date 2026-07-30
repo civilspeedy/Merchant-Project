@@ -1,15 +1,33 @@
 package com.example.database;
 
+import java.io.File;
 import java.sql.SQLException;
 
 public class Manager {
 
     private static Database database;
-    private static final String DB_URL =
-        "jdbc:h2:file:./data/productionDatabase;CIPHER=AES";
+    private static final String DB_PATH = "./data/database";
+    private static final String DB_URL = "jdbc:h2:file:" + DB_PATH;
+    private static final String[] DB_EXTENSIONS = new String[] {
+        ".mv.db",
+        ".trace.db",
+        ".lock.db",
+    };
 
-    public void newUser(String password) throws SQLException {
+    public static void newUser(String password) throws SQLException {
         // need to delete file or would just dropping tables be better?
+        for (var db : DB_EXTENSIONS) {
+            var path = DB_PATH + db;
+            var file = new File(path);
+            if (file.exists()) {
+                if (!file.delete()) {
+                    throw new RuntimeException(
+                        "Failed to delete database file: " + path
+                    );
+                }
+            }
+        }
+
         database = new Database(DB_URL, password);
     }
 }
