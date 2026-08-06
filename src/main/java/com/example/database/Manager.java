@@ -34,5 +34,15 @@ public class Manager {
         database = new Database(DB_URL, password);
     }
 
+    public static boolean dbExists() {
+        for (var db : DB_EXTENSIONS) {
+            var file = new File(DB_PATH + db);
+            if (file.exists()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void newApiKey(String key) {}
 }
