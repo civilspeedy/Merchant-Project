@@ -87,7 +87,6 @@ public class MainWindow {
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
 
-            // needs to check if db exist and prompt new user if not
             if (Manager.dbExists()) {
                 new Login(frame);
             } else {
