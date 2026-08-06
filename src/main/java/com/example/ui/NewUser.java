@@ -3,7 +3,6 @@ package com.example.ui;
 import com.example.database.Manager;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
