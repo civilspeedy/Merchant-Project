@@ -1,1 +1,1 @@
-SELECT * FROM transactions WHERE user_id = ?;
+SELECT * FROM transactions;

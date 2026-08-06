@@ -1,20 +1,14 @@
 package com.example.database.records;
 
-public record User(String username, String password) implements InputRecord {
+public record User(String password) implements InputRecord {
+    private static final int MAX_CHARS = 90;
+
     public User {
-        if (username.length() > 50) throw new IllegalArgumentException(
-            "username length cannot exceed 50"
-        );
-        else if (password.length() > 90) throw new IllegalArgumentException(
+        if (password.length() > MAX_CHARS) throw new IllegalArgumentException(
             "password length cannot exceed 90"
         );
         else if (
-            username.length() == 0 || username == null
-        ) throw new IllegalArgumentException(
-            "username cannot be empty or null"
-        );
-        else if (
-            password.length() == 0 || password == null
+            password.isBlank() || password.isEmpty()
         ) throw new IllegalArgumentException(
             "password cannot be empty or null"
         );
@@ -22,6 +16,6 @@ public record User(String username, String password) implements InputRecord {
 
     @Override
     public String[] getFieldArray() {
-        return new String[] { username, password };
+        return new String[] { password };
     }
 }

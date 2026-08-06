@@ -1,1 +1,1 @@
-SELECT * FROM inventory WHERE user_id = ?;
+SELECT * FROM inventory;

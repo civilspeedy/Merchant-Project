@@ -15,22 +15,13 @@ public final class Errors {
     private static final int EX_MAX = 12;
 
     public static final void checkInventoryRecord(
-        int userId,
         String code,
         String exchange,
         double quantity
     ) throws IllegalArgumentException {
-        checkUserId(userId);
         checkCode(code);
         checkExchange(exchange);
         checkQuantity(quantity);
-    }
-
-    private static final void checkUserId(int userId)
-        throws IllegalArgumentException {
-        if (userId < 1) {
-            throw new IllegalArgumentException("userId cannot be less than 1");
-        }
     }
 
     private static final void checkCode(String code)
@@ -39,7 +30,7 @@ public final class Errors {
             throw new IllegalArgumentException(
                 "code length cannot exceed " + CODE_MAX
             );
-        } else if (code.length() == 0 || code == null) {
+        } else if (code.isEmpty() || code.isBlank() || code == null) {
             throw new IllegalArgumentException("code" + EMPTY_NULL);
         }
     }
@@ -50,7 +41,9 @@ public final class Errors {
             throw new IllegalArgumentException(
                 "exchange length cannot exceed " + EX_MAX
             );
-        } else if (exchange.length() == 0 || exchange == null) {
+        } else if (
+            exchange.isBlank() || exchange.isEmpty() || exchange == null
+        ) {
             throw new IllegalArgumentException("exchange" + EMPTY_NULL);
         }
     }
@@ -67,13 +60,12 @@ public final class Errors {
     }
 
     public static final void checkTransactionRecord(
-        int userId,
         String code,
         String exchange,
         double quantity,
         double price
     ) throws IllegalArgumentException {
-        checkInventoryRecord(userId, code, exchange, quantity);
+        checkInventoryRecord(code, exchange, quantity);
         checkPrice(price);
     }
 

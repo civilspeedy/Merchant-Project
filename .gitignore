@@ -157,3 +157,4 @@ cython_debug/
 .settings/org.eclipse.m2e.core.prefs
 /.settings
 src/test/java/com/example/resources/massiveTestKey.txt
+/data

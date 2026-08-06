@@ -14,10 +14,10 @@ import tools.jackson.databind.ObjectMapper;
 public class Massive {
 
     private static final String URL_BASE = "https://api.massive.com/v2/";
-    private static HttpClient client = HttpClient.newBuilder().build();
+    private static final HttpClient client = HttpClient.newBuilder().build();
     private static final String USER_AGENT = "Mozilla/5.0 (Java-HttpClient)";
     private static final String ACCEPT = "application/json";
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
     private static final byte MAX_REQUESTS = 5;
     private static byte requestCount = 0;
     private static LocalTime lastRequest = null;
@@ -93,7 +93,6 @@ public class Massive {
             .append(key)
             .toString();
 
-        System.out.println(url);
         var request = HttpRequest.newBuilder()
             .uri(new URI(url))
             .GET()
@@ -101,7 +100,7 @@ public class Massive {
             .header("accept", ACCEPT)
             .build();
 
-        HttpResponse<String> response = client.send(
+        var response = client.send(
             request,
             HttpResponse.BodyHandlers.ofString()
         );
