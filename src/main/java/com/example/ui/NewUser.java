@@ -3,7 +3,9 @@ package com.example.ui;
 import com.example.database.Manager;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.KeyEvent;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -13,9 +15,12 @@ import javax.swing.JPasswordField;
 class NewUser {
 
     private static final String NEW_USER = "New User";
+    private JDialog dialog;
+    private JLabel warnLabel;
 
     public NewUser(JFrame parent) {
-        var dialog = new Modal(NEW_USER, parent).getDialog();
+        var modal = new Modal(NEW_USER, parent);
+        this.dialog = modal.getDialog();
         var panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
 
         var passwordLabel = new JLabel("New Password:");
@@ -32,32 +37,11 @@ class NewUser {
             confirmField,
         }).getPanel();
 
-        var warnLabel = new JLabel("");
+        this.warnLabel = new JLabel("");
+
         var submitButton = new JButton("Submit");
         submitButton.addActionListener(event -> {
-            var pass = new String(passwordField.getPassword());
-            var confirm = new String(confirmField.getPassword());
-
-            if (pass.isBlank() || pass.isEmpty()) {
-                warnLabel.setText("Password cannot be blank!");
-            } else if (confirm.isBlank() || confirm.isEmpty()) {
-                warnLabel.setText("Please confirm password!");
-            } else if (!pass.equals(confirm)) {
-                warnLabel.setText("Passwords do not match!");
-            } else {
-                int response = JOptionPane.showConfirmDialog(
-                    dialog,
-                    "Are you sure? This will erase all existing data.",
-                    "Are you sure?",
-                    JOptionPane.YES_NO_OPTION
-                );
-
-                if (response == JOptionPane.YES_OPTION) {
-                    createNewUser(dialog, pass);
-                } else {
-                    System.out.println("No");
-                }
-            }
+            this.submitPassword(passwordField, confirmField);
         });
 
         var bottomPanel = new ChildPanel(new Component[] {
@@ -73,16 +57,45 @@ class NewUser {
         dialog.setVisible(true);
     }
 
-    private static void createNewUser(Component parent, String password) {
+    private void submitPassword(
+        JPasswordField passwordField,
+        JPasswordField confirmField
+    ) {
+        var warning = "";
+        var pass = new String(passwordField.getPassword());
+        var confirm = new String(confirmField.getPassword());
+
+        if (pass.isBlank() || pass.isEmpty()) {
+            warning = "Password cannot be blank!";
+        } else if (confirm.isBlank() || confirm.isEmpty()) {
+            warning = "Please confirm password!";
+        } else if (!pass.equals(confirm)) {
+            warning = "Passwords do not match!";
+        } else {
+            int response = JOptionPane.showConfirmDialog(
+                this.dialog,
+                "Are you sure? This will erase all existing data.",
+                "Are you sure?",
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if (response == JOptionPane.YES_OPTION) {
+                createNewUser(pass);
+            }
+            this.dialog.dispose();
+        }
+        this.warnLabel.setText(warning);
+    }
+
+    private void createNewUser(String password) {
         try {
             Manager.newUser(password);
             JOptionPane.showMessageDialog(
-                parent,
+                this.dialog,
                 "New user creation successful!"
             );
-            // parent needs to close
         } catch (Exception e) {
-            Message.showError(parent, e);
+            Message.showError(this.dialog, e);
         }
     }
 }
