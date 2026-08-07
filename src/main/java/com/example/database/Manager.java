@@ -44,5 +44,5 @@ public class Manager {
         return false;
     }
 
-    public static void newApiKey(String key) {}
+    public static void newApiKey(String name, String key) {}
 }

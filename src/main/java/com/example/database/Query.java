@@ -1,0 +1,92 @@
+package com.example.database;
+
+final class Query {
+
+    private static final String API_TABLE_NAME = "api_keys";
+    private static final String API_FIELDS = "name, api_key";
+
+    private static final String TRANS_TABLE_NAME = "transactions";
+    private static final String INVENT_TABLE_NAME = "inventory";
+    private static final String INVENT_FIELDS = "(code, exchange, quantity)";
+
+    private static final String INSERT = "INSERT INTO %s %s VALUES %s;";
+    private static final String SELECT = "SELECT %s FROM %s WHERE %s = %s;";
+    private static final String SELECT_ALL = "SELECT * FROM %s;";
+
+    private static final String intoBrackets(Object[] values) {
+        var builder = new StringBuilder('(');
+        for (int i = 0; i < values.length; i++) {
+            builder.append(String.valueOf(values[i]));
+            if (i != values.length - 1) builder.append(',');
+        }
+        return builder.append(')').toString();
+    }
+
+    public static final String[] getCreateTables() {
+        var createInventTable = String.format(
+            """
+            CREATE TABLE IF NOT EXISTS %s (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                code NVARCHAR(5) NOT NULL,
+                exchange NVARCHAR(12) NOT NULL,
+                quantity DOUBLE NOT NULL,
+                UNIQUE(code)
+            );
+            """,
+            INVENT_TABLE_NAME
+        );
+
+        var createTransTable = String.format(
+            """
+            CREATE TABLE IF NOT EXISTS %s (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                code NVARCHAR(5) NOT NULL,
+                exchange NVARCHAR(12) NOT NULL,
+                quantity DOUBLE NOT NULL,
+                price DOUBLE NOT NULL,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                buy BOOLEAN NOT NULL
+            );
+            """,
+            TRANS_TABLE_NAME
+        );
+
+        var createApiTable = String.format(
+            """
+                CREATE TABLE IF NOT EXISTS ? (
+                    name NVARCHAR(12) NOT NULL PRIMARY KEY,
+                    api_key NVARCHAR(25) NOT NULL
+                );
+            """,
+            API_TABLE_NAME
+        );
+
+        return new String[] {
+            createInventTable,
+            createTransTable,
+            createApiTable,
+        };
+    }
+
+    public static final String insertIntoApi(String name, String key) {
+        var values = intoBrackets(new String[] { name, key });
+        return String.format(INSERT, API_TABLE_NAME, API_FIELDS, values);
+    }
+
+    public static final String selectFromApi(String name) {
+        return String.format(SELECT, "api_key", API_TABLE_NAME, "name", name);
+    }
+
+    public static final String insertIntoInvent(
+        String code,
+        String exchange,
+        double quantity
+    ) {
+        var values = intoBrackets(new Object[] { code, exchange, quantity });
+        return String.format(INSERT, INVENT_TABLE_NAME, INVENT_FIELDS, values);
+    }
+
+    public static final String selectAllFromInvent() {
+        return String.format(SELECT_ALL, INVENT_TABLE_NAME);
+    }
+}

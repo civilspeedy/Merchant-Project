@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class Database {
+class Database {
 
     private static final Log log = new Log("Database");
     private static final String USER = "sa";
@@ -24,7 +24,7 @@ public class Database {
         dbConnected = true;
     }
 
-    public static enum Table {
+    static enum Table {
         INVENTORY,
         TRANSACTIONS,
     }
@@ -37,7 +37,7 @@ public class Database {
         return new String(stream.readAllBytes());
     }
 
-    void createTables() throws Exception {
+    public void createTables() throws Exception {
         if (!dbConnected) {
             throw new IllegalStateException(
                 "database has not been connected yet!"
@@ -56,18 +56,9 @@ public class Database {
         tablesCreated = true;
     }
 
-    static enum Insert {
-        TRANS("insertIntoTrans.sql"),
-        INVENT("insertIntoInvent.sql");
+    public void insert(String[] values) throws Exception {}
 
-        public final String path;
-
-        private Insert(String path) {
-            this.path = path;
-        }
-    }
-
-    void insert(Insert queryType, InputRecord data) throws Exception {
+    void insert(InsertQuery queryType, InputRecord data) throws Exception {
         if (!tablesCreated) {
             throw new IllegalStateException(
                 "tables may not exist! createTables() must run before this method!"
@@ -89,13 +80,13 @@ public class Database {
         connection.commit();
     }
 
-    void close() throws SQLException {
+    public void close() throws SQLException {
         log.out("closing database");
         connection.commit();
         connection.close();
     }
 
-    void dropAll() throws SQLException {
+    public void dropAll() throws SQLException {
         log.out("dropping all tables");
         var statement = connection.createStatement();
         statement.execute(DROP_ALL_OBJECTS);
@@ -103,7 +94,7 @@ public class Database {
         connection.commit();
     }
 
-    static enum Select {
+    public static enum Select {
         ALL_INVENT("*", "inventory/selectAllInventory.sql"),
         ALL_TRANS("*", "transactions/selectAllTransactions.sql");
 
@@ -116,7 +107,7 @@ public class Database {
         }
     }
 
-    String[] select(Select selection, String target) throws Exception {
+    public String[] select(Select selection, String target) throws Exception {
         String sql = getQuery("/sql/select/" + selection.path);
         var statement = connection.prepareStatement(sql);
         if (target != null) {

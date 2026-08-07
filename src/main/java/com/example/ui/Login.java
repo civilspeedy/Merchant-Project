@@ -2,7 +2,6 @@ package com.example.ui;
 
 import com.example.database.Manager;
 import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
 import java.sql.SQLInvalidAuthorizationSpecException;
 import javax.swing.JButton;
 import javax.swing.JDialog;

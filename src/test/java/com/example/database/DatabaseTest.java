@@ -30,10 +30,10 @@ public class DatabaseTest {
         Database.createTables();
 
         var user = new User(TEST_PASSWORD);
-        Database.insert(Database.Insert.USER, user);
+        Database.insert(Database.InsertQuery.USER, user);
 
         var inventory = new Inventory(SAFE_CODE, SAFE_EXCHANGE, SAFE_DOUBLE);
-        Database.insert(Database.Insert.INVENT, inventory);
+        Database.insert(Database.InsertQuery.INVENT, inventory);
 
         var transaction = new Transaction(
             SAFE_CODE,
@@ -43,7 +43,7 @@ public class DatabaseTest {
             true
         );
 
-        Database.insert(Database.Insert.TRANS, transaction);
+        Database.insert(Database.InsertQuery.TRANS, transaction);
         expectedTimestamp = LocalDateTime.now();
     }
 
