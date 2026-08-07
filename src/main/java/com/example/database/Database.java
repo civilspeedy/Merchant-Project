@@ -1,9 +1,6 @@
 package com.example.database;
 
-import com.example.database.records.InputRecord;
 import com.example.util.Log;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -15,66 +12,40 @@ class Database {
     private static final Log log = new Log("Database");
     private static final String USER = "sa";
     private static Connection connection;
-    private static boolean tablesCreated = false;
-    private static boolean dbConnected = false;
     private static final String DROP_ALL_OBJECTS = "DROP ALL OBJECTS;";
 
     Database(String url, String password) throws SQLException {
         connection = DriverManager.getConnection(url, USER, password);
-        dbConnected = true;
+        this.createTables();
     }
 
-    static enum Table {
+    public static enum Table {
         INVENTORY,
         TRANSACTIONS,
+        API,
     }
 
-    private String getQuery(String path) throws IOException {
-        InputStream stream = Database.class.getResourceAsStream(path);
-        if (stream == null) {
-            throw new IOException(path + " could not be found");
-        }
-        return new String(stream.readAllBytes());
-    }
-
-    public void createTables() throws Exception {
-        if (!dbConnected) {
-            throw new IllegalStateException(
-                "database has not been connected yet!"
-            );
-        }
-        String sql = getQuery("/sql/create/createTables.sql");
-        String[] queries = sql.split(";");
+    public void createTables() throws SQLException {
+        String[] queries = Query.createTables();
         var statement = connection.createStatement();
 
         for (var query : queries) {
-            statement.addBatch(query + ";");
+            statement.addBatch(query);
         }
         statement.executeBatch();
         statement.close();
         connection.commit();
-        tablesCreated = true;
     }
 
-    public void insert(String[] values) throws Exception {}
+    public void insert(Table table, Object[] values) throws SQLException {
+        String query = switch (table) {
+            case TRANSACTIONS -> Query.insetIntoTrans(values);
+            case API -> Query.insertIntoApi(values);
+            case INVENTORY -> Query.insetIntoTrans(values);
+        };
 
-    void insert(InsertQuery queryType, InputRecord data) throws Exception {
-        if (!tablesCreated) {
-            throw new IllegalStateException(
-                "tables may not exist! createTables() must run before this method!"
-            );
-        }
-
-        String sql = getQuery("/sql/insert/" + queryType.path);
-
-        var statement = connection.prepareStatement(sql);
-        String[] fields = data.getFieldArray();
-
-        for (int i = 0; i < fields.length; i++) {
-            statement.setString(i + 1, fields[i]);
-        }
-
-        statement.execute();
+        var statement = connection.createStatement();
+        statement.execute(query);
 
         statement.close();
         connection.commit();
@@ -94,46 +65,47 @@ class Database {
         connection.commit();
     }
 
-    public static enum Select {
-        ALL_INVENT("*", "inventory/selectAllInventory.sql"),
-        ALL_TRANS("*", "transactions/selectAllTransactions.sql");
+    public Object selectOne(Table table, String target) throws SQLException {
+        String sql = switch (table) {
+            case API -> Query.selectFromApi(target);
+            default -> "";
+        };
 
-        public final String label;
-        public final String path;
+        var statement = connection.prepareStatement(sql);
 
-        private Select(String label, String path) {
-            this.label = label;
-            this.path = path;
+        ResultSet results = statement.executeQuery();
+
+        if (results.next()) {
+            return results.getObject(0);
+        } else {
+            throw new SQLException("no objects found in table");
         }
     }
 
-    public String[] select(Select selection, String target) throws Exception {
-        String sql = getQuery("/sql/select/" + selection.path);
+    public Object[] selectAll(Table table) throws SQLException {
+        String sql = switch (table) {
+            case TRANSACTIONS -> Query.selectAllFromTrans();
+            case INVENTORY -> Query.selectAllFromInvent();
+            default -> "";
+        };
+
         var statement = connection.prepareStatement(sql);
-        if (target != null) {
-            statement.setString(1, target);
-        }
 
         ResultSet result = statement.executeQuery();
 
         var results = new ArrayList<String>();
-        if (selection.label.equals("*")) {
-            while (result.next()) {
-                var rowString = new StringBuilder();
-                var meta = result.getMetaData();
 
-                for (int i = 1; i <= meta.getColumnCount(); i++) {
-                    if (i > 1) {
-                        rowString.append(',');
-                    }
-                    rowString.append(result.getString(i));
+        while (result.next()) {
+            var rowString = new StringBuilder();
+            var meta = result.getMetaData();
+
+            for (int i = 1; i <= meta.getColumnCount(); i++) {
+                if (i > 1) {
+                    rowString.append(',');
                 }
-                results.add(rowString.toString());
+                rowString.append(result.getObject(i));
             }
-        } else {
-            while (result.next()) {
-                results.add(result.getString(selection.label));
-            }
+            results.add(rowString.toString());
         }
 
         statement.close();

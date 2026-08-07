@@ -6,6 +6,9 @@ final class Query {
     private static final String API_FIELDS = "name, api_key";
 
     private static final String TRANS_TABLE_NAME = "transactions";
+    private static final String TRANS_FIELDS =
+        "(code, exchange, quantity, price, buy)";
+
     private static final String INVENT_TABLE_NAME = "inventory";
     private static final String INVENT_FIELDS = "(code, exchange, quantity)";
 
@@ -22,7 +25,7 @@ final class Query {
         return builder.append(')').toString();
     }
 
-    public static final String[] getCreateTables() {
+    public static final String[] createTables() {
         var createInventTable = String.format(
             """
             CREATE TABLE IF NOT EXISTS %s (
@@ -68,25 +71,42 @@ final class Query {
         };
     }
 
-    public static final String insertIntoApi(String name, String key) {
-        var values = intoBrackets(new String[] { name, key });
-        return String.format(INSERT, API_TABLE_NAME, API_FIELDS, values);
+    public static final String insertIntoApi(Object[] values) {
+        return String.format(
+            INSERT,
+            API_TABLE_NAME,
+            API_FIELDS,
+            intoBrackets(values)
+        );
     }
 
     public static final String selectFromApi(String name) {
         return String.format(SELECT, "api_key", API_TABLE_NAME, "name", name);
     }
 
-    public static final String insertIntoInvent(
-        String code,
-        String exchange,
-        double quantity
-    ) {
-        var values = intoBrackets(new Object[] { code, exchange, quantity });
-        return String.format(INSERT, INVENT_TABLE_NAME, INVENT_FIELDS, values);
+    public static final String insertIntoInvent(Object[] values) {
+        return String.format(
+            INSERT,
+            INVENT_TABLE_NAME,
+            INVENT_FIELDS,
+            intoBrackets(values)
+        );
     }
 
     public static final String selectAllFromInvent() {
         return String.format(SELECT_ALL, INVENT_TABLE_NAME);
+    }
+
+    public static final String insetIntoTrans(Object[] values) {
+        return String.format(
+            INSERT,
+            TRANS_TABLE_NAME,
+            TRANS_FIELDS,
+            intoBrackets(values)
+        );
+    }
+
+    public static final String selectAllFromTrans() {
+        return String.format(SELECT_ALL, TRANS_TABLE_NAME);
     }
 }

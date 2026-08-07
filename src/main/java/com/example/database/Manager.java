@@ -44,5 +44,11 @@ public class Manager {
         return false;
     }
 
-    public static void newApiKey(String name, String key) {}
+    public static void newApiKey(String name, String key) throws SQLException {
+        database.insert(Database.Table.API, new String[] { name, key });
+    }
+
+    public static String getApiKey(String name) throws SQLException {
+        return String.valueOf(database.selectOne(Database.Table.API, name));
+    }
 }
