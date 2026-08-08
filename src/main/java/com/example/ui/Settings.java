@@ -1,6 +1,5 @@
 package com.example.ui;
 
-import com.example.util.Exit;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
@@ -69,7 +68,7 @@ class Settings {
             );
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(Exit.ERR.code);
+            System.exit(-1);
         }
 
         ThemeValue[] theme = MainWindow.getTheme(darkMode);

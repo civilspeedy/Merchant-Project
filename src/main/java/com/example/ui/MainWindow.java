@@ -1,6 +1,6 @@
 package com.example.ui;
 
-import com.example.database.Manager;
+import com.example.database.Database;
 import com.example.util.Resource;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -87,7 +87,7 @@ public class MainWindow {
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
 
-            if (Manager.dbExists()) {
+            if (Database.dbExists()) {
                 new Login(frame);
             } else {
                 new NewUser(frame);

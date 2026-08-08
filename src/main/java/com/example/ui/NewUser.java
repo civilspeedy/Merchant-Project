@@ -1,8 +1,7 @@
 package com.example.ui;
 
-import com.example.database.Manager;
+import com.example.database.Database;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -24,32 +23,27 @@ class NewUser {
 
         var passwordLabel = new JLabel("New Password:");
         var passwordField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
-        var passwordPanel = new ChildPanel(new Component[] {
-            passwordLabel,
-            passwordField,
-        }).getPanel();
+        JPanel passwordPanel = ChildPanel.create(passwordLabel, passwordField);
 
         var confirmLabel = new JLabel("Confirm Password:");
         var confirmField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
-        var confirmPanel = new ChildPanel(new Component[] {
-            confirmLabel,
-            confirmField,
-        }).getPanel();
+        JPanel confirmPanel = ChildPanel.create(confirmLabel, confirmField);
 
         this.warnLabel = new JLabel("");
+
+        var apiLabel = new JLabel("Massive API:");
+        var apiField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
+        JPanel apiPanel = ChildPanel.create(apiLabel, apiField);
 
         var submitButton = new JButton("Submit");
         submitButton.addActionListener(event -> {
             this.submitPassword(passwordField, confirmField);
         });
-
-        var bottomPanel = new ChildPanel(new Component[] {
-            warnLabel,
-            submitButton,
-        }).getPanel();
+        JPanel bottomPanel = ChildPanel.create(warnLabel, submitButton);
 
         panel.add(passwordPanel);
         panel.add(confirmPanel);
+        panel.add(apiPanel);
         panel.add(bottomPanel);
 
         dialog.add(panel, BorderLayout.CENTER);
@@ -71,24 +65,29 @@ class NewUser {
         } else if (!pass.equals(confirm)) {
             warning = "Passwords do not match!";
         } else {
-            int response = JOptionPane.showConfirmDialog(
-                this.dialog,
-                "Are you sure? This will erase all existing data.",
-                "Are you sure?",
-                JOptionPane.YES_NO_OPTION
-            );
+            if (Database.dbExists()) {
+                int response = JOptionPane.showConfirmDialog(
+                    this.dialog,
+                    "Are you sure? This will erase all existing data.",
+                    "Are you sure?",
+                    JOptionPane.YES_NO_OPTION
+                );
 
-            if (response == JOptionPane.YES_OPTION) {
+                if (response == JOptionPane.YES_OPTION) {
+                    createNewUser(pass);
+                    this.dialog.dispose();
+                }
+            } else {
                 createNewUser(pass);
+                this.dialog.dispose();
             }
-            this.dialog.dispose();
         }
         this.warnLabel.setText(warning);
     }
 
     private void createNewUser(String password) {
         try {
-            Manager.newUser(password);
+            Database.newUser(password);
             JOptionPane.showMessageDialog(
                 this.dialog,
                 "New user creation successful!"

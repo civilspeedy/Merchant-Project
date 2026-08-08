@@ -1,31 +1,75 @@
 package com.example.database;
 
-import com.example.util.Log;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-class Database {
+public final class Database {
 
-    private static final Log log = new Log("Database");
+    private static final String DB_PATH = "./data/database";
+    private static final String DB_URL = "jdbc:h2:file:" + DB_PATH;
+    private static final String[] DB_EXTENSIONS = new String[] {
+        ".mv.db",
+        ".trace.db",
+        ".lock.db",
+    };
+
     private static final String USER = "sa";
     private static Connection connection;
     private static final String DROP_ALL_OBJECTS = "DROP ALL OBJECTS;";
 
-    Database(String url, String password) throws SQLException {
-        connection = DriverManager.getConnection(url, USER, password);
-        this.createTables();
+    public static void destroyDb() {
+        for (var db : DB_EXTENSIONS) {
+            var path = DB_PATH + db;
+            var file = new File(path);
+            if (file.exists()) {
+                if (!file.delete()) {
+                    throw new RuntimeException(
+                        "Failed to delete database file: " + path
+                    );
+                }
+            }
+        }
     }
 
-    public static enum Table {
+    public static void newUser(String password) throws SQLException {
+        destroyDb();
+        login(password);
+        createTables();
+    }
+
+    public static void login(String password) throws SQLException {
+        connection = DriverManager.getConnection(DB_URL, USER, password);
+    }
+
+    public static boolean dbExists() {
+        for (var db : DB_EXTENSIONS) {
+            var file = new File(DB_PATH + db);
+            if (file.exists()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void newApiKey(String name, String key) throws SQLException {
+        insert(Table.API, new String[] { name, key });
+    }
+
+    public static String getApiKey(String name) throws SQLException {
+        return String.valueOf(selectOne(Table.API, name));
+    }
+
+    private static enum Table {
         INVENTORY,
         TRANSACTIONS,
         API,
     }
 
-    public void createTables() throws SQLException {
+    private static void createTables() throws SQLException {
         String[] queries = Query.createTables();
         var statement = connection.createStatement();
 
@@ -37,7 +81,8 @@ class Database {
         connection.commit();
     }
 
-    public void insert(Table table, Object[] values) throws SQLException {
+    private static void insert(Table table, Object[] values)
+        throws SQLException {
         String query = switch (table) {
             case TRANSACTIONS -> Query.insetIntoTrans(values);
             case API -> Query.insertIntoApi(values);
@@ -51,21 +96,8 @@ class Database {
         connection.commit();
     }
 
-    public void close() throws SQLException {
-        log.out("closing database");
-        connection.commit();
-        connection.close();
-    }
-
-    public void dropAll() throws SQLException {
-        log.out("dropping all tables");
-        var statement = connection.createStatement();
-        statement.execute(DROP_ALL_OBJECTS);
-        statement.close();
-        connection.commit();
-    }
-
-    public Object selectOne(Table table, String target) throws SQLException {
+    private static Object selectOne(Table table, String target)
+        throws SQLException {
         String sql = switch (table) {
             case API -> Query.selectFromApi(target);
             default -> "";
@@ -76,13 +108,13 @@ class Database {
         ResultSet results = statement.executeQuery();
 
         if (results.next()) {
-            return results.getObject(0);
+            return results.getObject(1);
         } else {
             throw new SQLException("no objects found in table");
         }
     }
 
-    public Object[] selectAll(Table table) throws SQLException {
+    private static Object[] selectAll(Table table) throws SQLException {
         String sql = switch (table) {
             case TRANSACTIONS -> Query.selectAllFromTrans();
             case INVENTORY -> Query.selectAllFromInvent();

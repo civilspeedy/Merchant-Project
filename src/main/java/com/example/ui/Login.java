@@ -1,6 +1,6 @@
 package com.example.ui;
 
-import com.example.database.Manager;
+import com.example.database.Database;
 import java.awt.BorderLayout;
 import java.sql.SQLInvalidAuthorizationSpecException;
 import javax.swing.JButton;
@@ -50,7 +50,7 @@ class Login {
         JPasswordField passwordField
     ) {
         try {
-            Manager.login(new String(passwordField.getPassword()));
+            Database.login(new String(passwordField.getPassword()));
             dialog.dispose();
             // trigger load
         } catch (SQLInvalidAuthorizationSpecException e) {

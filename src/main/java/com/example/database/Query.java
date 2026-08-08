@@ -3,7 +3,7 @@ package com.example.database;
 final class Query {
 
     private static final String API_TABLE_NAME = "api_keys";
-    private static final String API_FIELDS = "name, api_key";
+    private static final String API_FIELDS = "(name, api_key)";
 
     private static final String TRANS_TABLE_NAME = "transactions";
     private static final String TRANS_FIELDS =
@@ -13,13 +13,13 @@ final class Query {
     private static final String INVENT_FIELDS = "(code, exchange, quantity)";
 
     private static final String INSERT = "INSERT INTO %s %s VALUES %s;";
-    private static final String SELECT = "SELECT %s FROM %s WHERE %s = %s;";
+    private static final String SELECT = "SELECT %s FROM %s WHERE %s = '%s';";
     private static final String SELECT_ALL = "SELECT * FROM %s;";
 
     private static final String intoBrackets(Object[] values) {
-        var builder = new StringBuilder('(');
+        var builder = new StringBuilder().append('(');
         for (int i = 0; i < values.length; i++) {
-            builder.append(String.valueOf(values[i]));
+            builder.append('\'').append(String.valueOf(values[i])).append('\'');
             if (i != values.length - 1) builder.append(',');
         }
         return builder.append(')').toString();
@@ -56,7 +56,7 @@ final class Query {
 
         var createApiTable = String.format(
             """
-                CREATE TABLE IF NOT EXISTS ? (
+                CREATE TABLE IF NOT EXISTS %s (
                     name NVARCHAR(12) NOT NULL PRIMARY KEY,
                     api_key NVARCHAR(25) NOT NULL
                 );
@@ -72,6 +72,7 @@ final class Query {
     }
 
     public static final String insertIntoApi(Object[] values) {
+        System.out.println(intoBrackets(values));
         return String.format(
             INSERT,
             API_TABLE_NAME,
