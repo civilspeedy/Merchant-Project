@@ -1,5 +1,7 @@
 package com.example.database;
 
+import lombok.val;
+
 final class Query {
 
     private static final String API_TABLE_NAME = "api_keys";
@@ -17,7 +19,7 @@ final class Query {
     private static final String SELECT_ALL = "SELECT * FROM %s;";
 
     private static final String intoBrackets(Object[] values) {
-        var builder = new StringBuilder().append('(');
+        val builder = new StringBuilder().append('(');
         for (int i = 0; i < values.length; i++) {
             builder.append('\'').append(String.valueOf(values[i])).append('\'');
             if (i != values.length - 1) builder.append(',');
@@ -26,7 +28,7 @@ final class Query {
     }
 
     public static final String[] createTables() {
-        var createInventTable = String.format(
+        val createInventTable = String.format(
             """
             CREATE TABLE IF NOT EXISTS %s (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,7 +41,7 @@ final class Query {
             INVENT_TABLE_NAME
         );
 
-        var createTransTable = String.format(
+        val createTransTable = String.format(
             """
             CREATE TABLE IF NOT EXISTS %s (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -54,7 +56,7 @@ final class Query {
             TRANS_TABLE_NAME
         );
 
-        var createApiTable = String.format(
+        val createApiTable = String.format(
             """
                 CREATE TABLE IF NOT EXISTS %s (
                     name NVARCHAR(12) NOT NULL PRIMARY KEY,
@@ -72,7 +74,6 @@ final class Query {
     }
 
     public static final String insertIntoApi(Object[] values) {
-        System.out.println(intoBrackets(values));
         return String.format(
             INSERT,
             API_TABLE_NAME,

@@ -9,6 +9,8 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import lombok.NonNull;
+import lombok.val;
 import tools.jackson.databind.ObjectMapper;
 
 public class Massive {
@@ -44,8 +46,8 @@ public class Massive {
             .toString();
     }
 
-    private static boolean stringCheck(String str) {
-        return str.isBlank() || str.isEmpty() || str == null;
+    private static boolean stringCheck(@NonNull String str) {
+        return str.isBlank() || str.isEmpty();
     }
 
     public static AggregateBars getAggregate(
@@ -66,7 +68,7 @@ public class Massive {
         }
 
         if (lastRequest != null) {
-            var timeDifference = Duration.between(lastRequest, LocalTime.now());
+            val timeDifference = Duration.between(lastRequest, LocalTime.now());
             // I don't trust this to work as I expect.
             // A separate thread or ticker to reset count every minute would probably be more reliable but could prove overkill.
             if (timeDifference.toMinutes() > 1) {
@@ -80,9 +82,9 @@ public class Massive {
             );
         }
 
-        var startString = localToString(start);
-        var endString = localToString(end);
-        var url = new StringBuilder(URL_BASE)
+        val startString = localToString(start);
+        val endString = localToString(end);
+        val url = new StringBuilder(URL_BASE)
             .append("aggs/ticker/")
             .append(code)
             .append("/range/1/day/")
@@ -93,14 +95,14 @@ public class Massive {
             .append(key)
             .toString();
 
-        var request = HttpRequest.newBuilder()
+        val request = HttpRequest.newBuilder()
             .uri(new URI(url))
             .GET()
             .headers("user-agent", USER_AGENT)
             .header("accept", ACCEPT)
             .build();
 
-        var response = client.send(
+        val response = client.send(
             request,
             HttpResponse.BodyHandlers.ofString()
         );
@@ -115,10 +117,11 @@ public class Massive {
         return mapper.readValue(response.body(), AggregateBars.class);
     }
 
-    public static void setKey(String k) throws IllegalArgumentException {
-        if (k.isBlank() || k.isEmpty() || k == null) {
+    public static void setKey(@NonNull String k)
+        throws IllegalArgumentException {
+        if (k.isBlank() || k.isEmpty()) {
             throw new IllegalArgumentException(
-                "massive api key cannot be empty, null or blank"
+                "massive api key cannot be empty or blank"
             );
         }
 

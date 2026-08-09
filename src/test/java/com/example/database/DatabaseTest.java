@@ -17,7 +17,7 @@ public class DatabaseTest {
     @BeforeAll
     public static void setup() throws SQLException {
         // Create a new user (this also initializes the database)
-        Database.newUser(TEST_PASSWORD);
+        Database.newUser(TEST_PASSWORD, "need api here");
     }
 
     @Test

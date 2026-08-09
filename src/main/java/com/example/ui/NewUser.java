@@ -9,6 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import lombok.NonNull;
+import lombok.val;
 
 class NewUser {
 
@@ -16,28 +18,28 @@ class NewUser {
     private JDialog dialog;
     private JLabel warnLabel;
 
-    public NewUser(JFrame parent) {
-        var modal = new Modal(NEW_USER, parent);
+    public NewUser(@NonNull JFrame parent) {
+        val modal = new Modal(NEW_USER, parent);
         this.dialog = modal.getDialog();
-        var panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
+        val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
 
-        var passwordLabel = new JLabel("New Password:");
-        var passwordField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
+        val passwordLabel = new JLabel("New Password:");
+        val passwordField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
         JPanel passwordPanel = ChildPanel.create(passwordLabel, passwordField);
 
-        var confirmLabel = new JLabel("Confirm Password:");
-        var confirmField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
+        val confirmLabel = new JLabel("Confirm Password:");
+        val confirmField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
         JPanel confirmPanel = ChildPanel.create(confirmLabel, confirmField);
 
         this.warnLabel = new JLabel("");
 
-        var apiLabel = new JLabel("Massive API:");
-        var apiField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
+        val apiLabel = new JLabel("Massive API:");
+        val apiField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
         JPanel apiPanel = ChildPanel.create(apiLabel, apiField);
 
-        var submitButton = new JButton("Submit");
+        val submitButton = new JButton("Submit");
         submitButton.addActionListener(event -> {
-            this.submitPassword(passwordField, confirmField);
+            this.submitPassword(passwordField, confirmField, apiField);
         });
         JPanel bottomPanel = ChildPanel.create(warnLabel, submitButton);
 
@@ -52,11 +54,13 @@ class NewUser {
 
     private void submitPassword(
         JPasswordField passwordField,
-        JPasswordField confirmField
+        JPasswordField confirmField,
+        JPasswordField apiField
     ) {
         var warning = "";
-        var pass = new String(passwordField.getPassword());
-        var confirm = new String(confirmField.getPassword());
+        val pass = new String(passwordField.getPassword());
+        val confirm = new String(confirmField.getPassword());
+        val key = new String(apiField.getPassword());
 
         if (pass.isBlank() || pass.isEmpty()) {
             warning = "Password cannot be blank!";
@@ -74,26 +78,24 @@ class NewUser {
                 );
 
                 if (response == JOptionPane.YES_OPTION) {
-                    createNewUser(pass);
+                    createNewUser(pass, key);
                     this.dialog.dispose();
                 }
             } else {
-                createNewUser(pass);
+                createNewUser(pass, key);
                 this.dialog.dispose();
             }
         }
         this.warnLabel.setText(warning);
     }
 
-    private void createNewUser(String password) {
+    private void createNewUser(@NonNull String password, @NonNull String key) {
         try {
-            Database.newUser(password);
-            JOptionPane.showMessageDialog(
-                this.dialog,
-                "New user creation successful!"
-            );
+            Database.newUser(password, key);
+            this.dialog.dispose();
         } catch (Exception e) {
             Message.showError(this.dialog, e);
+            System.out.println(e);
         }
     }
 }

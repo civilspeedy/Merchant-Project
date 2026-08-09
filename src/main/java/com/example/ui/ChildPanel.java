@@ -3,6 +3,7 @@ package com.example.ui;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import javax.swing.JPanel;
+import lombok.val;
 
 class ChildPanel {
 
@@ -14,19 +15,19 @@ class ChildPanel {
     }
 
     public static JPanel create(Component[] components) {
-        var panel = createPanel();
-        for (var c : components) panel.add(c);
+        val panel = createPanel();
+        for (val c : components) panel.add(c);
         return panel;
     }
 
     public static JPanel create(Component compOne) {
-        var panel = createPanel();
+        val panel = createPanel();
         panel.add(compOne);
         return panel;
     }
 
     public static JPanel create(Component compOne, Component compTwo) {
-        var panel = createPanel();
+        val panel = createPanel();
         panel.add(compOne);
         panel.add(compTwo);
         return panel;
@@ -37,7 +38,7 @@ class ChildPanel {
         Component compTwo,
         Component compThree
     ) {
-        var panel = createPanel();
+        val panel = createPanel();
         panel.add(compOne);
         panel.add(compTwo);
         panel.add(compThree);
@@ -50,7 +51,7 @@ class ChildPanel {
         Component compThree,
         Component compFour
     ) {
-        var panel = createPanel();
+        val panel = createPanel();
         panel.add(compOne);
         panel.add(compTwo);
         panel.add(compThree);
@@ -65,7 +66,7 @@ class ChildPanel {
         Component compFour,
         Component compFive
     ) {
-        var panel = createPanel();
+        val panel = createPanel();
         panel.add(compOne);
         panel.add(compTwo);
         panel.add(compThree);
@@ -82,7 +83,7 @@ class ChildPanel {
         Component compFive,
         Component compSix
     ) {
-        var panel = createPanel();
+        val panel = createPanel();
         panel.add(compOne);
         panel.add(compTwo);
         panel.add(compThree);
