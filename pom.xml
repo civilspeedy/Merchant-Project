@@ -7,7 +7,7 @@
   <groupId>com.example</groupId>
   <artifactId>Merchant-Project</artifactId>
   <packaging>jar</packaging>
-  <version>0.1</version>
+  <version>0.2</version>
   <name>Merchant-Project</name>
   <url>http://maven.apache.org</url>
   <properties>
@@ -24,12 +24,6 @@
         <groupId>tools.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>3.2.1</version>
-        <scope>compile</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-crypto</artifactId>
-        <version>7.1.0</version>
         <scope>compile</scope>
     </dependency>
     <dependency>

@@ -69,24 +69,15 @@ public class MainWindow {
             });
             topPanel.add(settingsButton, BorderLayout.EAST);
 
-            // Graph display area (placeholder)
-            val graphPanel = new JPanel();
-            graphPanel.setBorder(
-                BorderFactory.createTitledBorder("Graph Display")
-            );
-            graphPanel.setPreferredSize(GRAPH_SIZE);
-            val graphLabel = new JLabel(
-                "Graph will be displayed here",
-                JLabel.CENTER
-            );
-            graphPanel.add(graphLabel);
-
             frame.add(topPanel, BorderLayout.NORTH);
-            frame.add(graphPanel, BorderLayout.CENTER);
 
             frame.setSize(WINDOW_SIZE);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
+            double[] sampleData = { 10, 25, 15, 40, 35, 50, 45, 60, 55, 70 };
+
+            val graph = new Graph(sampleData);
+            frame.add(graph, BorderLayout.CENTER);
 
             if (Database.dbExists()) {
                 new Login(frame);
