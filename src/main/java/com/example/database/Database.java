@@ -72,13 +72,9 @@ public final class Database {
     }
 
     private static void createTables() throws SQLException {
-        String[] queries = Query.createTables();
+        String sql = Query.createTables();
         val statement = connection.createStatement();
-
-        for (var query : queries) {
-            statement.addBatch(query);
-        }
-        statement.executeBatch();
+        statement.execute(sql);
         statement.close();
         connection.commit();
     }
@@ -143,7 +139,7 @@ public final class Database {
                 }
                 rowString.append(result.getObject(i));
             }
-            results.add(rowString.toString());
+            results.add(String.valueOf(rowString));
         }
 
         statement.close();
