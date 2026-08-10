@@ -1,112 +1,95 @@
 package com.example.database;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.example.database.records.Inventory;
-import com.example.database.records.Transaction;
-import com.example.database.records.User;
-import java.time.LocalDateTime;
+import java.sql.SQLException;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class DatabaseTest {
 
-    private static final String TEST_DB_URL = "jdbc:h2:mem:testdb;CIPHER=AES";
-    private static final String TEST_DB_PASSWORD = "filepwd userpwd";
     private static final String TEST_PASSWORD =
         "qA&!RmCQzCRs7c3bdwvQR7FHQ3NjB!eQsY$9vd64b%^3kemFS8pm#%RtSpD*dvyu";
-    private static final int SAFE_USER_ID = 1;
-    private static final String SAFE_CODE = "APPL";
-    private static final String SAFE_EXCHANGE = "NASDAQ";
-    private static final double SAFE_DOUBLE = 1.5324;
-    private static final String SAFE_DUB_STR = String.valueOf(SAFE_DOUBLE);
-    private static final String SAFE_USER_STR = String.valueOf(SAFE_USER_ID);
-    private static LocalDateTime expectedTimestamp;
 
     @BeforeAll
-    public static void setup() throws Exception {
-        Database.connect(TEST_DB_URL, TEST_DB_PASSWORD);
-        Database.createTables();
+    public static void setup() throws SQLException {
+        // Create a new user (this also initializes the database)
+        Database.newUser(TEST_PASSWORD, "need api here");
+    }
 
-        var user = new User(TEST_PASSWORD);
-        Database.insert(Database.Insert.USER, user);
-
-        var inventory = new Inventory(SAFE_CODE, SAFE_EXCHANGE, SAFE_DOUBLE);
-        Database.insert(Database.Insert.INVENT, inventory);
-
-        var transaction = new Transaction(
-            SAFE_CODE,
-            SAFE_EXCHANGE,
-            SAFE_DOUBLE,
-            SAFE_DOUBLE,
-            true
+    @Test
+    public void testNewUser() throws SQLException {
+        // Verify that the database exists after newUser() is called
+        assertTrue(
+            Database.dbExists(),
+            "Database should exist after newUser()"
         );
-
-        Database.insert(Database.Insert.TRANS, transaction);
-        expectedTimestamp = LocalDateTime.now();
     }
 
     @Test
-    public void testSelectUserPassword() throws Exception {
-        String[] results = Database.select(Database.Select.PASSWORD, null);
-        assertArrayEquals(new String[] { TEST_PASSWORD }, results);
+    public void testLogin() throws SQLException {
+        // Test that login succeeds with correct password
+        // (setup already logged in, so we verify no exception is thrown)
+        Database.login(TEST_PASSWORD);
+        // If no exception thrown, login was successful
+        assertTrue(true);
     }
 
     @Test
-    public void testSelectAllInventory() throws Exception {
-        String[] results = Database.select(Database.Select.ALL_INVENT, null);
-        if (results.length > 1) {
-            throw new Exception("results too big");
-        }
-
-        String result = results[0];
-        String[] actualArray = result.split(",");
-
-        var expectedArray = new String[] {
-            SAFE_USER_STR,
-            SAFE_CODE,
-            SAFE_EXCHANGE,
-            SAFE_DUB_STR,
-        };
-
-        assertArrayEquals(expectedArray, actualArray);
+    public void testDbExists() {
+        // Verify database existence
+        assertTrue(Database.dbExists(), "Database should exist after setup");
     }
 
     @Test
-    public void testSelectAllTransactions() throws Exception {
-        String[] results = Database.select(Database.Select.ALL_TRANS, null);
+    public void testNewApiKey() throws SQLException {
+        String apiKeyName = "test_key";
+        String apiKeyValue = "secret-key-12345";
 
-        if (results.length > 1) {
-            throw new Exception("results too big");
-        }
+        // Insert a new API key
+        Database.newApiKey(apiKeyName, apiKeyValue);
 
-        String result = results[0];
-        String[] actualArray = result.split(",");
-        int numVals = actualArray.length;
-        var expectedArray = new String[] {
-            SAFE_USER_STR,
-            SAFE_CODE,
-            SAFE_EXCHANGE,
-            SAFE_DUB_STR,
-            SAFE_DUB_STR,
-            "TIMESTAMP",
-            "TRUE",
-        };
+        // Retrieve the API key and verify it matches
+        String retrievedKey = Database.getApiKey(apiKeyName);
+        assertEquals(
+            apiKeyValue,
+            retrievedKey,
+            "Retrieved API key should match the inserted one"
+        );
+    }
 
-        if (numVals != expectedArray.length) {
-            throw new Exception("too many fields");
-        }
+    @Test
+    public void testGetApiKey() throws SQLException {
+        String apiKeyName = "test_key_2";
+        String apiKeyValue = "another-secret-key";
 
-        for (int i = 0; i < numVals; i++) {
-            if (expectedArray[i].equals("TIMESTAMP")) {
-                String[] expectedDate = expectedTimestamp.toString().split("T");
-                String[] actualDate = actualArray[i].split(" ");
-                assertEquals(expectedDate[0], actualDate[0]);
-                // maybe do time but would be hard to get accurate
-            } else {
-                assertEquals(expectedArray[i], actualArray[i]);
-            }
-        }
+        Database.newApiKey(apiKeyName, apiKeyValue);
+        String retrieved = Database.getApiKey(apiKeyName);
+
+        assertEquals(
+            apiKeyValue,
+            retrieved,
+            "API key should be retrievable after insertion"
+        );
+    }
+
+    @Test
+    public void testGetApiKeyNotFound() throws SQLException {
+        // Attempting to get a non-existent API key should throw SQLException
+        assertThrows(
+            SQLException.class,
+            () -> {
+                Database.getApiKey("non-existent-key");
+            },
+            "Should throw SQLException when API key not found"
+        );
+    }
+
+    @AfterAll
+    public static void finishUp() {
+        Database.destroyDb();
     }
 }

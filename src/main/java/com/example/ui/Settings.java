@@ -1,6 +1,5 @@
 package com.example.ui;
 
-import com.example.util.Exit;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
@@ -10,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import lombok.val;
 
 class Settings {
 
@@ -20,12 +20,12 @@ class Settings {
     public static boolean darkMode = false;
 
     public Settings(JFrame parent) {
-        var dialog = new Modal(SETTINGS_TITLE, parent).getDialog();
+        val dialog = new Modal(SETTINGS_TITLE, parent).getDialog();
 
-        var panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
+        val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
         panel.setBorder(Config.EMPTY_BORDER);
 
-        var themeToggle = new JButton(
+        val themeToggle = new JButton(
             darkMode ? SWITCH_TO_LIGHT : SWITCH_TO_DARK
         );
         themeToggle.addActionListener(event -> {
@@ -36,19 +36,19 @@ class Settings {
             SwingUtilities.updateComponentTreeUI(dialog);
         });
 
-        var childPanel = new JPanel(
+        val childPanel = new JPanel(
             new FlowLayout(FlowLayout.LEFT),
             Config.DOUBLE_BUFFER
         );
         childPanel.add(new JLabel("Massive API Key:"));
-        var apiField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
+        val apiField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
         childPanel.add(apiField);
 
-        var warnLabel = new JLabel("");
+        val warnLabel = new JLabel("");
 
-        var saveApiButton = new JButton("Save API Key");
+        val saveApiButton = new JButton("Save API Key");
         saveApiButton.addActionListener(e -> {
-            var apiKey = new String(apiField.getPassword()); // should not be stored as plaintext
+            val apiKey = new String(apiField.getPassword()); // should not be stored as plaintext
             if (apiKey.isEmpty() || apiKey.isBlank()) {
                 warnLabel.setText("API key cannot be empty or blank!");
             }
@@ -69,10 +69,10 @@ class Settings {
             );
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(Exit.ERR.code);
+            System.exit(-1);
         }
 
         ThemeValue[] theme = MainWindow.getTheme(darkMode);
-        for (var t : theme) UIManager.put(t.key(), t.color());
+        for (val t : theme) UIManager.put(t.key(), t.color());
     }
 }

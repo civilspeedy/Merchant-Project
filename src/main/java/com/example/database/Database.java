@@ -1,148 +1,145 @@
 package com.example.database;
 
-import com.example.database.records.InputRecord;
-import com.example.util.Log;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import lombok.val;
 
-public class Database {
+public final class Database {
 
-    private static final Log log = new Log("Database");
+    private static final String DB_PATH = "./data/database";
+    private static final String DB_URL = "jdbc:h2:file:" + DB_PATH;
+    private static final String[] DB_EXTENSIONS = new String[] {
+        ".mv.db",
+        ".trace.db",
+        ".lock.db",
+    };
+
     private static final String USER = "sa";
     private static Connection connection;
-    private static boolean tablesCreated = false;
-    private static boolean dbConnected = false;
-    private static final String DROP_ALL_OBJECTS = "DROP ALL OBJECTS;";
 
-    Database(String url, String password) throws SQLException {
-        connection = DriverManager.getConnection(url, USER, password);
-        dbConnected = true;
+    public static void destroyDb() {
+        for (val db : DB_EXTENSIONS) {
+            val path = DB_PATH + db;
+            val file = new File(path);
+            if (file.exists()) {
+                if (!file.delete()) {
+                    throw new RuntimeException(
+                        "Failed to delete database file: " + path
+                    );
+                }
+            }
+        }
     }
 
-    public static enum Table {
+    public static void newUser(String password, String key)
+        throws SQLException {
+        destroyDb();
+        login(password);
+        createTables();
+        newApiKey("massive", key);
+    }
+
+    public static void login(String password) throws SQLException {
+        connection = DriverManager.getConnection(DB_URL, USER, password);
+    }
+
+    public static boolean dbExists() {
+        for (val db : DB_EXTENSIONS) {
+            val file = new File(DB_PATH + db);
+            if (file.exists()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void newApiKey(String name, String key) throws SQLException {
+        insert(Table.API, new String[] { name, key });
+    }
+
+    public static String getApiKey(String name) throws SQLException {
+        return String.valueOf(selectOne(Table.API, name));
+    }
+
+    private static enum Table {
         INVENTORY,
         TRANSACTIONS,
+        API,
     }
 
-    private String getQuery(String path) throws IOException {
-        InputStream stream = Database.class.getResourceAsStream(path);
-        if (stream == null) {
-            throw new IOException(path + " could not be found");
-        }
-        return new String(stream.readAllBytes());
-    }
-
-    void createTables() throws Exception {
-        if (!dbConnected) {
-            throw new IllegalStateException(
-                "database has not been connected yet!"
-            );
-        }
-        String sql = getQuery("/sql/create/createTables.sql");
-        String[] queries = sql.split(";");
-        var statement = connection.createStatement();
-
-        for (var query : queries) {
-            statement.addBatch(query + ";");
-        }
-        statement.executeBatch();
+    private static void createTables() throws SQLException {
+        String sql = Query.createTables();
+        val statement = connection.createStatement();
+        statement.execute(sql);
         statement.close();
         connection.commit();
-        tablesCreated = true;
     }
 
-    static enum Insert {
-        TRANS("insertIntoTrans.sql"),
-        INVENT("insertIntoInvent.sql");
+    private static void insert(Table table, Object[] values)
+        throws SQLException {
+        String query = switch (table) {
+            case TRANSACTIONS -> Query.insetIntoTrans(values);
+            case API -> Query.insertIntoApi(values);
+            case INVENTORY -> Query.insetIntoTrans(values);
+        };
 
-        public final String path;
-
-        private Insert(String path) {
-            this.path = path;
-        }
-    }
-
-    void insert(Insert queryType, InputRecord data) throws Exception {
-        if (!tablesCreated) {
-            throw new IllegalStateException(
-                "tables may not exist! createTables() must run before this method!"
-            );
-        }
-
-        String sql = getQuery("/sql/insert/" + queryType.path);
-
-        var statement = connection.prepareStatement(sql);
-        String[] fields = data.getFieldArray();
-
-        for (int i = 0; i < fields.length; i++) {
-            statement.setString(i + 1, fields[i]);
-        }
-
-        statement.execute();
+        val statement = connection.createStatement();
+        statement.execute(query);
 
         statement.close();
         connection.commit();
     }
 
-    void close() throws SQLException {
-        log.out("closing database");
-        connection.commit();
-        connection.close();
-    }
+    private static Object selectOne(Table table, String target)
+        throws SQLException {
+        String sql = switch (table) {
+            case API -> Query.selectFromApi(target);
+            default -> "";
+        };
 
-    void dropAll() throws SQLException {
-        log.out("dropping all tables");
-        var statement = connection.createStatement();
-        statement.execute(DROP_ALL_OBJECTS);
-        statement.close();
-        connection.commit();
-    }
+        val statement = connection.prepareStatement(sql);
 
-    static enum Select {
-        ALL_INVENT("*", "inventory/selectAllInventory.sql"),
-        ALL_TRANS("*", "transactions/selectAllTransactions.sql");
+        ResultSet results = statement.executeQuery();
 
-        public final String label;
-        public final String path;
-
-        private Select(String label, String path) {
-            this.label = label;
-            this.path = path;
+        if (results.next()) {
+            return results.getObject(1);
+        } else {
+            throw new SQLException("no objects found in table");
         }
     }
 
-    String[] select(Select selection, String target) throws Exception {
-        String sql = getQuery("/sql/select/" + selection.path);
-        var statement = connection.prepareStatement(sql);
-        if (target != null) {
-            statement.setString(1, target);
+    private static Object[] selectAll(Table table) throws SQLException {
+        String sql;
+
+        if (table == Table.TRANSACTIONS) {
+            sql = Query.selectAllFromTrans();
+        } else if (table == Table.INVENTORY) {
+            sql = Query.selectAllFromInvent();
+        } else {
+            throw new IllegalArgumentException("Invalid table for select all");
         }
+
+        val statement = connection.prepareStatement(sql);
 
         ResultSet result = statement.executeQuery();
 
-        var results = new ArrayList<String>();
-        if (selection.label.equals("*")) {
-            while (result.next()) {
-                var rowString = new StringBuilder();
-                var meta = result.getMetaData();
+        val results = new ArrayList<String>();
 
-                for (int i = 1; i <= meta.getColumnCount(); i++) {
-                    if (i > 1) {
-                        rowString.append(',');
-                    }
-                    rowString.append(result.getString(i));
+        while (result.next()) {
+            val rowString = new StringBuilder();
+            val meta = result.getMetaData();
+
+            for (int i = 1; i <= meta.getColumnCount(); i++) {
+                if (i > 1) {
+                    rowString.append(',');
                 }
-                results.add(rowString.toString());
+                rowString.append(result.getObject(i));
             }
-        } else {
-            while (result.next()) {
-                results.add(result.getString(selection.label));
-            }
+            results.add(String.valueOf(rowString));
         }
 
         statement.close();

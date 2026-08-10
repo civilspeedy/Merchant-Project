@@ -1,6 +1,6 @@
 package com.example.ui;
 
-import com.example.database.Manager;
+import com.example.database.Database;
 import com.example.util.Resource;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import lombok.val;
 
 public class MainWindow {
 
@@ -43,7 +44,7 @@ public class MainWindow {
         SwingUtilities.invokeLater(() -> {
             Settings.applyTheme();
 
-            var frame = new JFrame(WINDOW_TITLE);
+            val frame = new JFrame(WINDOW_TITLE);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLayout(new BorderLayout());
 
@@ -51,14 +52,14 @@ public class MainWindow {
             // JFrame defaults to decorated=true, which shows native window controls
 
             // Top panel with search
-            var topPanel = new JPanel(new BorderLayout(), Config.DOUBLE_BUFFER);
-            var searchField = new JTextField(Config.DEFAULT_INPUT_COLUMNS);
+            val topPanel = new JPanel(new BorderLayout(), Config.DOUBLE_BUFFER);
+            val searchField = new JTextField(Config.DEFAULT_INPUT_COLUMNS);
             searchField.setPreferredSize(SEARCH_FIELD_SIZE);
             searchField.setToolTipText("Search...");
             topPanel.add(searchField, BorderLayout.CENTER);
 
             // Settings button
-            var settingsButton = new JButton(
+            val settingsButton = new JButton(
                 Resource.getIcon(Resource.Icon.SETTINGS)
             );
             settingsButton.setToolTipText("Settings");
@@ -69,12 +70,12 @@ public class MainWindow {
             topPanel.add(settingsButton, BorderLayout.EAST);
 
             // Graph display area (placeholder)
-            var graphPanel = new JPanel();
+            val graphPanel = new JPanel();
             graphPanel.setBorder(
                 BorderFactory.createTitledBorder("Graph Display")
             );
             graphPanel.setPreferredSize(GRAPH_SIZE);
-            var graphLabel = new JLabel(
+            val graphLabel = new JLabel(
                 "Graph will be displayed here",
                 JLabel.CENTER
             );
@@ -87,7 +88,7 @@ public class MainWindow {
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
 
-            if (Manager.dbExists()) {
+            if (Database.dbExists()) {
                 new Login(frame);
             } else {
                 new NewUser(frame);

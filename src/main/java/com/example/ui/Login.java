@@ -1,8 +1,7 @@
 package com.example.ui;
 
-import com.example.database.Manager;
+import com.example.database.Database;
 import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
 import java.sql.SQLInvalidAuthorizationSpecException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -10,27 +9,28 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import lombok.val;
 
 class Login {
 
     private static final String LOGIN_TITLE = "Login";
 
     public Login(JFrame parent) {
-        var modal = new Modal(LOGIN_TITLE, parent);
-        var dialog = modal.getDialog();
+        val modal = new Modal(LOGIN_TITLE, parent);
+        val dialog = modal.getDialog();
 
-        var panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
+        val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
         panel.setBorder(Config.EMPTY_BORDER);
 
-        var passwordField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
+        val passwordField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
 
-        var submitButton = new JButton("Submit");
+        val submitButton = new JButton("Submit");
         submitButton.setPreferredSize(Config.TEXT_BUTTON_SIZE);
         submitButton.addActionListener(event -> {
             submitPassword(dialog, passwordField);
         });
 
-        var newUserButton = new JButton("Create New User");
+        val newUserButton = new JButton("Create New User");
         newUserButton.setPreferredSize(Config.TEXT_BUTTON_SIZE);
         newUserButton.addActionListener(e -> {
             dialog.setVisible(false);
@@ -51,7 +51,7 @@ class Login {
         JPasswordField passwordField
     ) {
         try {
-            Manager.login(new String(passwordField.getPassword()));
+            Database.login(new String(passwordField.getPassword()));
             dialog.dispose();
             // trigger load
         } catch (SQLInvalidAuthorizationSpecException e) {
