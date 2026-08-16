@@ -20,7 +20,7 @@ class Settings {
     public static boolean darkMode = false;
 
     public Settings(JFrame parent) {
-        val dialog = new Modal(SETTINGS_TITLE, parent).getDialog();
+        val modal = new Modal(SETTINGS_TITLE, parent);
 
         val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
         panel.setBorder(Config.EMPTY_BORDER);
@@ -33,7 +33,7 @@ class Settings {
             themeToggle.setText(darkMode ? SWITCH_TO_LIGHT : SWITCH_TO_DARK);
             applyTheme();
             SwingUtilities.updateComponentTreeUI(parent);
-            SwingUtilities.updateComponentTreeUI(dialog);
+            SwingUtilities.updateComponentTreeUI(modal);
         });
 
         val childPanel = new JPanel(
@@ -58,8 +58,8 @@ class Settings {
         panel.add(childPanel);
         panel.add(saveApiButton);
 
-        dialog.add(panel, BorderLayout.CENTER);
-        dialog.setVisible(true);
+        modal.add(panel, BorderLayout.CENTER);
+        modal.setVisible(true);
     }
 
     public static void applyTheme() {

@@ -7,11 +7,13 @@
   <groupId>com.example</groupId>
   <artifactId>Merchant-Project</artifactId>
   <packaging>jar</packaging>
-  <version>0.1</version>
+  <version>0.2</version>
   <name>Merchant-Project</name>
   <url>http://maven.apache.org</url>
   <properties>
       <maven.compiler.release>25</maven.compiler.release>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
   <dependencies>
     <dependency>
@@ -24,12 +26,6 @@
         <groupId>tools.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>3.2.1</version>
-        <scope>compile</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-crypto</artifactId>
-        <version>7.1.0</version>
         <scope>compile</scope>
     </dependency>
     <dependency>
@@ -58,6 +54,7 @@
     <plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-compiler-plugin</artifactId>
+			 <version>3.15.0</version>
 			<configuration>
 				<annotationProcessorPaths>
 					<path>

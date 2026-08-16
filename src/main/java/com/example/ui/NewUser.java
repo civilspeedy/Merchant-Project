@@ -3,7 +3,6 @@ package com.example.ui;
 import com.example.database.Database;
 import java.awt.BorderLayout;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -15,41 +14,40 @@ import lombok.val;
 class NewUser {
 
     private static final String NEW_USER = "New User";
-    private JDialog dialog;
+    private Modal modal;
     private JLabel warnLabel;
 
     public NewUser(@NonNull JFrame parent) {
-        val modal = new Modal(NEW_USER, parent);
-        this.dialog = modal.getDialog();
+        this.modal = new Modal(NEW_USER, parent);
         val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
 
         val passwordLabel = new JLabel("New Password:");
         val passwordField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
-        JPanel passwordPanel = ChildPanel.create(passwordLabel, passwordField);
+        val passwordPanel = new ChildPanel(passwordLabel, passwordField);
 
         val confirmLabel = new JLabel("Confirm Password:");
         val confirmField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
-        JPanel confirmPanel = ChildPanel.create(confirmLabel, confirmField);
+        val confirmPanel = new ChildPanel(confirmLabel, confirmField);
 
         this.warnLabel = new JLabel("");
 
         val apiLabel = new JLabel("Massive API:");
         val apiField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
-        JPanel apiPanel = ChildPanel.create(apiLabel, apiField);
+        val apiPanel = new ChildPanel(apiLabel, apiField);
 
         val submitButton = new JButton("Submit");
         submitButton.addActionListener(event -> {
             this.submitPassword(passwordField, confirmField, apiField);
         });
-        JPanel bottomPanel = ChildPanel.create(warnLabel, submitButton);
+        val bottomPanel = new ChildPanel(warnLabel, submitButton);
 
         panel.add(passwordPanel);
         panel.add(confirmPanel);
         panel.add(apiPanel);
         panel.add(bottomPanel);
 
-        dialog.add(panel, BorderLayout.CENTER);
-        dialog.setVisible(true);
+        modal.add(panel, BorderLayout.CENTER);
+        modal.setVisible(true);
     }
 
     private void submitPassword(
@@ -71,7 +69,7 @@ class NewUser {
         } else {
             if (Database.dbExists()) {
                 int response = JOptionPane.showConfirmDialog(
-                    this.dialog,
+                    this.modal,
                     "Are you sure? This will erase all existing data.",
                     "Are you sure?",
                     JOptionPane.YES_NO_OPTION
@@ -79,11 +77,11 @@ class NewUser {
 
                 if (response == JOptionPane.YES_OPTION) {
                     createNewUser(pass, key);
-                    this.dialog.dispose();
+                    this.modal.dispose();
                 }
             } else {
                 createNewUser(pass, key);
-                this.dialog.dispose();
+                this.modal.dispose();
             }
         }
         this.warnLabel.setText(warning);
@@ -92,9 +90,9 @@ class NewUser {
     private void createNewUser(@NonNull String password, @NonNull String key) {
         try {
             Database.newUser(password, key);
-            this.dialog.dispose();
+            this.modal.dispose();
         } catch (Exception e) {
-            Message.showError(this.dialog, e);
+            Message.showError(this.modal, e);
             System.out.println(e);
         }
     }
