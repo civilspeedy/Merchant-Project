@@ -3,79 +3,69 @@ package com.example.ui;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import javax.swing.JPanel;
-import lombok.val;
 
-class ChildPanel {
+class ChildPanel extends JPanel {
 
-    private static JPanel createPanel() {
-        return new JPanel(
-            new FlowLayout(FlowLayout.LEFT),
-            Config.DOUBLE_BUFFER
-        );
+    public ChildPanel() {
+        super(new FlowLayout(FlowLayout.LEFT), Config.DOUBLE_BUFFER);
     }
 
-    public static JPanel create(Component[] components) {
-        val panel = createPanel();
-        for (val c : components) panel.add(c);
-        return panel;
+    public ChildPanel(Component[] components) {
+        this();
+        for (Component c : components) this.add(c);
     }
 
-    public static JPanel create(Component compOne) {
-        val panel = createPanel();
-        panel.add(compOne);
-        return panel;
+    public ChildPanel(Component compOne) {
+        this();
+        this.add(compOne);
     }
 
-    public static JPanel create(Component compOne, Component compTwo) {
-        val panel = createPanel();
-        panel.add(compOne);
-        panel.add(compTwo);
-        return panel;
+    public ChildPanel(Component compOne, Component compTwo) {
+        this();
+        this.add(compOne);
+        this.add(compTwo);
     }
 
-    public static JPanel create(
+    public ChildPanel(
         Component compOne,
         Component compTwo,
         Component compThree
     ) {
-        val panel = createPanel();
-        panel.add(compOne);
-        panel.add(compTwo);
-        panel.add(compThree);
-        return panel;
+        this();
+        this.add(compOne);
+        this.add(compTwo);
+        this.add(compThree);
     }
 
-    public static JPanel create(
+    public ChildPanel(
         Component compOne,
         Component compTwo,
         Component compThree,
         Component compFour
     ) {
-        val panel = createPanel();
-        panel.add(compOne);
-        panel.add(compTwo);
-        panel.add(compThree);
-        panel.add(compFour);
-        return panel;
+        this();
+        this.add(compOne);
+        this.add(compTwo);
+        this.add(compThree);
+        this.add(compFour);
     }
 
-    public static JPanel create(
+    public ChildPanel(
         Component compOne,
         Component compTwo,
         Component compThree,
         Component compFour,
         Component compFive
     ) {
-        val panel = createPanel();
-        panel.add(compOne);
-        panel.add(compTwo);
-        panel.add(compThree);
-        panel.add(compFour);
-        panel.add(compFive);
-        return panel;
+        this();
+        this.add(compOne);
+        this.add(compTwo);
+        this.add(compThree);
+        this.add(compFour);
+        this.add(compFive);
     }
 
-    public static JPanel create(
+    public ChildPanel(
         Component compOne,
         Component compTwo,
         Component compThree,
@@ -83,13 +73,12 @@ class ChildPanel {
         Component compFive,
         Component compSix
     ) {
-        val panel = createPanel();
-        panel.add(compOne);
-        panel.add(compTwo);
-        panel.add(compThree);
-        panel.add(compFour);
-        panel.add(compFive);
-        panel.add(compSix);
-        return panel;
+        this();
+        this.add(compOne);
+        this.add(compTwo);
+        this.add(compThree);
+        this.add(compFour);
+        this.add(compFive);
+        this.add(compSix);
     }
 }

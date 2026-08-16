@@ -17,7 +17,6 @@ class Login {
 
     public Login(JFrame parent) {
         val modal = new Modal(LOGIN_TITLE, parent);
-        val dialog = modal.getDialog();
 
         val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
         panel.setBorder(Config.EMPTY_BORDER);
@@ -27,23 +26,23 @@ class Login {
         val submitButton = new JButton("Submit");
         submitButton.setPreferredSize(Config.TEXT_BUTTON_SIZE);
         submitButton.addActionListener(event -> {
-            submitPassword(dialog, passwordField);
+            submitPassword(modal, passwordField);
         });
 
         val newUserButton = new JButton("Create New User");
         newUserButton.setPreferredSize(Config.TEXT_BUTTON_SIZE);
         newUserButton.addActionListener(e -> {
-            dialog.setVisible(false);
+            modal.setVisible(false);
             new NewUser(parent);
-            dialog.setVisible(true);
+            modal.setVisible(true);
         });
 
         panel.add(passwordField);
         panel.add(submitButton);
         panel.add(newUserButton);
 
-        dialog.add(panel, BorderLayout.CENTER);
-        dialog.setVisible(true);
+        modal.add(panel, BorderLayout.CENTER);
+        modal.setVisible(true);
     }
 
     private static void submitPassword(
