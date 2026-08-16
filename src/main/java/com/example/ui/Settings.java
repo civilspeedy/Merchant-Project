@@ -10,6 +10,7 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import lombok.val;
+import static com.example.util.Log.out;
 
 class Settings {
 
@@ -20,6 +21,8 @@ class Settings {
     public static boolean darkMode = false;
 
     public Settings(JFrame parent) {
+        out("creating settings modal");
+
         val modal = new Modal(SETTINGS_TITLE, parent);
 
         val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
@@ -63,6 +66,7 @@ class Settings {
     }
 
     public static void applyTheme() {
+        out("changing theme");
         try {
             UIManager.setLookAndFeel(
                 "javax.swing.plaf.nimbus.NimbusLookAndFeel"

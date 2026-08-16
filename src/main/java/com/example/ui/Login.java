@@ -10,12 +10,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import lombok.val;
+import static com.example.util.Log.out;
 
 class Login {
 
     private static final String LOGIN_TITLE = "Login";
 
     public Login(JFrame parent) {
+        out("creating login modal");
         val modal = new Modal(LOGIN_TITLE, parent);
 
         val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
@@ -49,6 +51,7 @@ class Login {
         JDialog dialog,
         JPasswordField passwordField
     ) {
+        out("submitting password");
         try {
             Database.login(new String(passwordField.getPassword()));
             dialog.dispose();

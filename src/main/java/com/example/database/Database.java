@@ -1,5 +1,7 @@
 package com.example.database;
 
+import static com.example.util.Log.out;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,6 +24,7 @@ public final class Database {
     private static Connection connection;
 
     public static void destroyDb() {
+        out("destroying database");
         for (val db : DB_EXTENSIONS) {
             val path = DB_PATH + db;
             val file = new File(path);
@@ -31,12 +34,14 @@ public final class Database {
                         "Failed to delete database file: " + path
                     );
                 }
+                out(path + "destroyed");
             }
         }
     }
 
     public static void newUser(String password, String key)
         throws SQLException {
+        out("creating new user");
         destroyDb();
         login(password);
         createTables();
@@ -44,10 +49,12 @@ public final class Database {
     }
 
     public static void login(String password) throws SQLException {
+        out("logging into database");
         connection = DriverManager.getConnection(DB_URL, USER, password);
     }
 
     public static boolean dbExists() {
+        out("checking if database exists");
         for (val db : DB_EXTENSIONS) {
             val file = new File(DB_PATH + db);
             if (file.exists()) {
@@ -58,10 +65,12 @@ public final class Database {
     }
 
     public static void newApiKey(String name, String key) throws SQLException {
+        out("inserting new" + name + " api key");
         insert(Table.API, new String[] { name, key });
     }
 
     public static String getApiKey(String name) throws SQLException {
+        out("selecting " + name + " api key");
         return String.valueOf(selectOne(Table.API, name));
     }
 
@@ -72,6 +81,7 @@ public final class Database {
     }
 
     private static void createTables() throws SQLException {
+        out("creating tables");
         String sql = Query.createTables();
         val statement = connection.createStatement();
         statement.execute(sql);
@@ -81,6 +91,7 @@ public final class Database {
 
     private static void insert(Table table, Object[] values)
         throws SQLException {
+        out("inserting into database");
         String query = switch (table) {
             case TRANSACTIONS -> Query.insetIntoTrans(values);
             case API -> Query.insertIntoApi(values);
@@ -96,6 +107,7 @@ public final class Database {
 
     private static Object selectOne(Table table, String target)
         throws SQLException {
+        out("selecting " + target + " from database");
         String sql = switch (table) {
             case API -> Query.selectFromApi(target);
             default -> "";
@@ -113,6 +125,7 @@ public final class Database {
     }
 
     private static Object[] selectAll(Table table) throws SQLException {
+        out("making bulk selection from database");
         String sql;
 
         if (table == Table.TRANSACTIONS) {

@@ -1,5 +1,7 @@
 package com.example.api.massive;
 
+import static com.example.util.Log.out;
+
 import com.example.api.massive.records.AggregateBars;
 import java.io.IOException;
 import java.net.URI;
@@ -55,6 +57,7 @@ public class Massive {
         LocalDate end,
         String code
     ) throws Exception {
+        out("fetching aggregate bar values from massive");
         if (start.compareTo(end) >= 0) {
             throw new IllegalArgumentException("end cannot be before start");
         }
