@@ -1,5 +1,8 @@
 package com.example.ui;
 
+import static com.example.util.Log.out;
+
+import com.example.ui.Theme.Theme;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
@@ -10,7 +13,6 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import lombok.val;
-import static com.example.util.Log.out;
 
 class Settings {
 
@@ -76,7 +78,15 @@ class Settings {
             System.exit(-1);
         }
 
-        ThemeValue[] theme = MainWindow.getTheme(darkMode);
-        for (val t : theme) UIManager.put(t.key(), t.color());
+        Theme theme = darkMode ? Config.DARK_THEME : Config.LIGHT_THEME;
+
+        UIManager.put("control", theme.control());
+        UIManager.put("text", theme.text());
+        UIManager.put("Button.background", theme.buttonBackground());
+        UIManager.put("Button.foreground", theme.buttonForeground());
+        UIManager.put("Button.focus", theme.buttonFocus());
+        UIManager.put("TextField.background", theme.textfieldBackground());
+        UIManager.put("TextField.foreground", theme.textfieldForeground());
+        UIManager.put("TextField.border", theme.border());
     }
 }

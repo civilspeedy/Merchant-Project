@@ -1,5 +1,7 @@
 package com.example.ui;
 
+import static com.example.util.Log.out;
+
 import com.example.database.Database;
 import com.example.util.Resource;
 import java.awt.BorderLayout;
@@ -11,7 +13,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import lombok.val;
-import static com.example.util.Log.out;
 
 public class MainWindow {
 
@@ -23,25 +24,8 @@ public class MainWindow {
     // Display Text
     private static final String WINDOW_TITLE = "Merchant";
 
-    // Theme
-    private static final String LIGHT_THEME_PATH = "json/lightTheme.json";
-    private static final String DARK_THEME_PATH = "json/darkTheme.json";
-    private static ThemeValue[] lightTheme;
-    private static ThemeValue[] darkTheme;
-
-    public static ThemeValue[] getTheme(boolean dark) {
-        return dark ? darkTheme : lightTheme;
-    }
-
     public static void start() {
         out("creating main window");
-        try {
-            out("fetching themes");
-            darkTheme = Resource.get(DARK_THEME_PATH, ThemeValue[].class);
-            lightTheme = Resource.get(LIGHT_THEME_PATH, ThemeValue[].class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         SwingUtilities.invokeLater(() -> {
             Settings.applyTheme();

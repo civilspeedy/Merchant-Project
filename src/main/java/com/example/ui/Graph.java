@@ -1,5 +1,7 @@
 package com.example.ui;
 
+import static com.example.util.Log.out;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -14,7 +16,6 @@ import java.util.Arrays;
 import javax.swing.JPanel;
 import lombok.NonNull;
 import lombok.val;
-import static com.example.util.Log.out;
 
 /**
  * Based off https://stackoverflow.com/a/8693635
@@ -140,10 +141,10 @@ public class Graph extends JPanel {
             graphPoints[i] = new Point(x, y);
         }
 
-        System.out.println("drawing x axis");
+        out("drawing x axis");
         graphics2D.drawLine(GAP, this.getHeight() - GAP, GAP, GAP);
 
-        System.out.println("drawing y axis");
+        out("drawing y axis");
         graphics2D.drawLine(
             GAP,
             this.getHeight() - GAP,
