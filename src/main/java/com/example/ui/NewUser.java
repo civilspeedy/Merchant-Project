@@ -46,8 +46,8 @@ class NewUser {
         panel.add(apiPanel);
         panel.add(bottomPanel);
 
-        modal.add(panel, BorderLayout.CENTER);
-        modal.setVisible(true);
+        this.modal.add(panel, BorderLayout.CENTER);
+        this.modal.setVisible(true);
     }
 
     private void submitPassword(
@@ -93,7 +93,6 @@ class NewUser {
             this.modal.dispose();
         } catch (Exception e) {
             Message.showError(this.modal, e);
-            System.out.println(e);
         }
     }
 }

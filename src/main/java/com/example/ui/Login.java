@@ -1,5 +1,9 @@
 package com.example.ui;
 
+import static com.example.util.Log.clear;
+import static com.example.util.Log.start;
+import static com.example.util.Log.stop;
+
 import com.example.database.Database;
 import java.awt.BorderLayout;
 import java.sql.SQLInvalidAuthorizationSpecException;
@@ -49,13 +53,17 @@ class Login {
         JDialog dialog,
         JPasswordField passwordField
     ) {
+        start("submit password");
         try {
             Database.login(new String(passwordField.getPassword()));
+            stop("submit password");
             dialog.dispose();
             // trigger load
         } catch (SQLInvalidAuthorizationSpecException e) {
+            clear("login failed");
             JOptionPane.showMessageDialog(dialog, "Invalid password!");
         } catch (Exception e) {
+            clear("login failed");
             Message.showError(dialog, e);
         }
     }

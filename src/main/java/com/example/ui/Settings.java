@@ -1,5 +1,9 @@
 package com.example.ui;
 
+import static com.example.util.Log.start;
+import static com.example.util.Log.stop;
+
+import com.example.ui.Theme.Theme;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
@@ -20,6 +24,8 @@ class Settings {
     public static boolean darkMode = false;
 
     public Settings(JFrame parent) {
+        start("create settings");
+
         val modal = new Modal(SETTINGS_TITLE, parent);
 
         val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
@@ -60,9 +66,11 @@ class Settings {
 
         modal.add(panel, BorderLayout.CENTER);
         modal.setVisible(true);
+        stop("create settings");
     }
 
     public static void applyTheme() {
+        start("apply theme");
         try {
             UIManager.setLookAndFeel(
                 "javax.swing.plaf.nimbus.NimbusLookAndFeel"
@@ -72,7 +80,16 @@ class Settings {
             System.exit(-1);
         }
 
-        ThemeValue[] theme = MainWindow.getTheme(darkMode);
-        for (val t : theme) UIManager.put(t.key(), t.color());
+        Theme theme = darkMode ? Config.DARK_THEME : Config.LIGHT_THEME;
+
+        UIManager.put("control", theme.control());
+        UIManager.put("text", theme.text());
+        UIManager.put("Button.background", theme.buttonBackground());
+        UIManager.put("Button.foreground", theme.buttonForeground());
+        UIManager.put("Button.focus", theme.buttonFocus());
+        UIManager.put("TextField.background", theme.textfieldBackground());
+        UIManager.put("TextField.foreground", theme.textfieldForeground());
+        UIManager.put("TextField.border", theme.border());
+        stop("apply theme");
     }
 }

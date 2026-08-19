@@ -1,5 +1,9 @@
 package com.example.database;
 
+import static com.example.util.Log.clear;
+import static com.example.util.Log.start;
+import static com.example.util.Log.stop;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,6 +26,7 @@ public final class Database {
     private static Connection connection;
 
     public static void destroyDb() {
+        start("destroy db");
         for (val db : DB_EXTENSIONS) {
             val path = DB_PATH + db;
             val file = new File(path);
@@ -33,36 +38,49 @@ public final class Database {
                 }
             }
         }
+        stop("destroy db");
     }
 
     public static void newUser(String password, String key)
         throws SQLException {
+        start("new user");
         destroyDb();
         login(password);
         createTables();
         newApiKey("massive", key);
+        stop("new user");
     }
 
     public static void login(String password) throws SQLException {
+        start("login");
         connection = DriverManager.getConnection(DB_URL, USER, password);
+        stop("login");
     }
 
     public static boolean dbExists() {
+        start("check db exists");
         for (val db : DB_EXTENSIONS) {
             val file = new File(DB_PATH + db);
             if (file.exists()) {
+                stop("check db exists");
                 return true;
             }
         }
+        stop("check db exists");
         return false;
     }
 
     public static void newApiKey(String name, String key) throws SQLException {
+        start("new api key");
         insert(Table.API, new String[] { name, key });
+        stop("new api key");
     }
 
     public static String getApiKey(String name) throws SQLException {
-        return String.valueOf(selectOne(Table.API, name));
+        start("get api key");
+        String result = String.valueOf(selectOne(Table.API, name));
+        stop("get api key");
+        return result;
     }
 
     private static enum Table {
@@ -72,15 +90,18 @@ public final class Database {
     }
 
     private static void createTables() throws SQLException {
+        start("create tables");
         String sql = Query.createTables();
         val statement = connection.createStatement();
         statement.execute(sql);
         statement.close();
         connection.commit();
+        stop("create tables");
     }
 
     private static void insert(Table table, Object[] values)
         throws SQLException {
+        start("insert row");
         String query = switch (table) {
             case TRANSACTIONS -> Query.insetIntoTrans(values);
             case API -> Query.insertIntoApi(values);
@@ -92,10 +113,12 @@ public final class Database {
 
         statement.close();
         connection.commit();
+        stop("insert row");
     }
 
     private static Object selectOne(Table table, String target)
         throws SQLException {
+        start("select record");
         String sql = switch (table) {
             case API -> Query.selectFromApi(target);
             default -> "";
@@ -106,13 +129,16 @@ public final class Database {
         ResultSet results = statement.executeQuery();
 
         if (results.next()) {
+            stop("select record");
             return results.getObject(1);
         } else {
+            clear("select failed");
             throw new SQLException("no objects found in table");
         }
     }
 
     private static Object[] selectAll(Table table) throws SQLException {
+        start("select all");
         String sql;
 
         if (table == Table.TRANSACTIONS) {
@@ -144,6 +170,7 @@ public final class Database {
 
         statement.close();
 
+        stop("select all");
         return results.toArray(new String[0]);
     }
 }

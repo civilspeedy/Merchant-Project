@@ -22,34 +22,13 @@ public class MainWindow {
     // Display Text
     private static final String WINDOW_TITLE = "Merchant";
 
-    // Theme
-    private static final String LIGHT_THEME_PATH = "json/lightTheme.json";
-    private static final String DARK_THEME_PATH = "json/darkTheme.json";
-    private static ThemeValue[] lightTheme;
-    private static ThemeValue[] darkTheme;
-
-    public static ThemeValue[] getTheme(boolean dark) {
-        return dark ? darkTheme : lightTheme;
-    }
-
     public static void start() {
-        try {
-            darkTheme = Resource.get(DARK_THEME_PATH, ThemeValue[].class);
-            lightTheme = Resource.get(LIGHT_THEME_PATH, ThemeValue[].class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         SwingUtilities.invokeLater(() -> {
             Settings.applyTheme();
-
             val frame = new JFrame(WINDOW_TITLE);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLayout(new BorderLayout());
 
-            // Use native OS window decorations (minimize, maximize, close buttons)
-            // JFrame defaults to decorated=true, which shows native window controls
-
-            // Top panel with search
             val topPanel = new JPanel(new BorderLayout(), Config.DOUBLE_BUFFER);
             val searchField = new JTextField(Config.DEFAULT_INPUT_COLUMNS);
             searchField.setPreferredSize(SEARCH_FIELD_SIZE);
