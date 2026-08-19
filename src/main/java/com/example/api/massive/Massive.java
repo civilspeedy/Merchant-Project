@@ -1,6 +1,8 @@
 package com.example.api.massive;
 
-import static com.example.util.Log.out;
+import static com.example.util.Log.clear;
+import static com.example.util.Log.start;
+import static com.example.util.Log.stop;
 
 import com.example.api.massive.records.AggregateBars;
 import java.io.IOException;
@@ -57,7 +59,7 @@ public class Massive {
         LocalDate end,
         String code
     ) throws Exception {
-        out("fetching aggregate bar values from massive");
+        start("get aggregate");
         if (start.compareTo(end) >= 0) {
             throw new IllegalArgumentException("end cannot be before start");
         }
@@ -117,6 +119,7 @@ public class Massive {
         if (status != 200) {
             throw new IOException("http request failure: " + status);
         }
+        stop("get aggregate");
         return mapper.readValue(response.body(), AggregateBars.class);
     }
 

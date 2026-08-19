@@ -1,5 +1,9 @@
 package com.example.ui;
 
+import static com.example.util.Log.clear;
+import static com.example.util.Log.start;
+import static com.example.util.Log.stop;
+
 import com.example.database.Database;
 import java.awt.BorderLayout;
 import java.sql.SQLInvalidAuthorizationSpecException;
@@ -10,14 +14,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import lombok.val;
-import static com.example.util.Log.out;
 
 class Login {
 
     private static final String LOGIN_TITLE = "Login";
 
     public Login(JFrame parent) {
-        out("creating login modal");
         val modal = new Modal(LOGIN_TITLE, parent);
 
         val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
@@ -51,14 +53,17 @@ class Login {
         JDialog dialog,
         JPasswordField passwordField
     ) {
-        out("submitting password");
+        start("submit password");
         try {
             Database.login(new String(passwordField.getPassword()));
+            stop("submit password");
             dialog.dispose();
             // trigger load
         } catch (SQLInvalidAuthorizationSpecException e) {
+            clear("login failed");
             JOptionPane.showMessageDialog(dialog, "Invalid password!");
         } catch (Exception e) {
+            clear("login failed");
             Message.showError(dialog, e);
         }
     }

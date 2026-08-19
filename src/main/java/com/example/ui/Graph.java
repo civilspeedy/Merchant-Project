@@ -1,6 +1,7 @@
 package com.example.ui;
 
-import static com.example.util.Log.out;
+import static com.example.util.Log.start;
+import static com.example.util.Log.stop;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -47,7 +48,7 @@ public class Graph extends JPanel {
     private boolean allDifferentDays;
 
     public Graph(@NonNull double[] values, @NonNull LocalDateTime[] times) {
-        out("creating graph");
+        start("create graph");
         this.values = values;
         this.times = times;
 
@@ -63,10 +64,11 @@ public class Graph extends JPanel {
         this.checkTimes(times);
 
         this.setPreferredSize(SIZE);
+        stop("create graph");
     }
 
     private void checkTimes(LocalDateTime[] times) {
-        out("checking graph input times");
+        start("check graph times");
         this.allSameDay = true;
         this.allDifferentDays = true;
 
@@ -96,11 +98,12 @@ public class Graph extends JPanel {
                 }
             }
         }
+        stop("check graph times");
     }
 
     @Override
     protected void paintComponent(Graphics graphics) {
-        out("painting graph");
+        start("paint component");
         super.paintComponent(graphics);
 
         Graphics2D graphics2D = (Graphics2D) graphics;
@@ -109,13 +112,11 @@ public class Graph extends JPanel {
             RenderingHints.VALUE_ANTIALIAS_ON
         );
 
-        out("checking graph value edge cases");
         double valueRange = maxValue - minValue;
         if (valueRange == 0) {
             valueRange = 1;
         }
 
-        out("checking graph time edge cases");
         long timeRange = Duration.between(minTime, maxTime).getSeconds();
         if (timeRange == 0) {
             timeRange = 1;
@@ -124,7 +125,6 @@ public class Graph extends JPanel {
         val xScale = ((double) this.getWidth() - 2 * GAP) / timeRange;
         val yScale = ((double) this.getHeight() - 2 * GAP) / valueRange;
 
-        out("creating graph points");
         val graphPoints = new Point[this.numOfVals];
         for (int i = 0; i < this.numOfVals; i++) {
             long secondsFromStart = Duration.between(
@@ -141,10 +141,8 @@ public class Graph extends JPanel {
             graphPoints[i] = new Point(x, y);
         }
 
-        out("drawing x axis");
         graphics2D.drawLine(GAP, this.getHeight() - GAP, GAP, GAP);
 
-        out("drawing y axis");
         graphics2D.drawLine(
             GAP,
             this.getHeight() - GAP,
@@ -156,7 +154,6 @@ public class Graph extends JPanel {
         graphics2D.setFont(new Font("Arial", Font.PLAIN, 12));
         graphics2D.setColor(Color.BLACK);
 
-        out("creating hatching on y axis with labels");
         for (int i = 0; i <= Y_HATCH_COUNT; i++) {
             int x = GRAPH_POINT_WIDTH + GAP;
             int y =
@@ -174,8 +171,6 @@ public class Graph extends JPanel {
             );
         }
 
-        out("creating hatching on x axis with labels");
-        out("plotting points on graph");
         for (int i = 0; i < this.numOfVals; i++) {
             long secondsFromStart = java.time.Duration.between(
                 minTime,
@@ -223,5 +218,6 @@ public class Graph extends JPanel {
                 GRAPH_POINT_WIDTH
             );
         }
+        stop("paint component");
     }
 }

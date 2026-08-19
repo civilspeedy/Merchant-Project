@@ -1,6 +1,7 @@
 package com.example.ui;
 
-import static com.example.util.Log.out;
+import static com.example.util.Log.start;
+import static com.example.util.Log.stop;
 
 import com.example.ui.Theme.Theme;
 import java.awt.BorderLayout;
@@ -23,7 +24,7 @@ class Settings {
     public static boolean darkMode = false;
 
     public Settings(JFrame parent) {
-        out("creating settings modal");
+        start("create settings");
 
         val modal = new Modal(SETTINGS_TITLE, parent);
 
@@ -65,10 +66,11 @@ class Settings {
 
         modal.add(panel, BorderLayout.CENTER);
         modal.setVisible(true);
+        stop("create settings");
     }
 
     public static void applyTheme() {
-        out("changing theme");
+        start("apply theme");
         try {
             UIManager.setLookAndFeel(
                 "javax.swing.plaf.nimbus.NimbusLookAndFeel"
@@ -88,5 +90,6 @@ class Settings {
         UIManager.put("TextField.background", theme.textfieldBackground());
         UIManager.put("TextField.foreground", theme.textfieldForeground());
         UIManager.put("TextField.border", theme.border());
+        stop("apply theme");
     }
 }

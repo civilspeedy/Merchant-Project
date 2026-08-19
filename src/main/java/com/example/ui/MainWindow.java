@@ -1,7 +1,5 @@
 package com.example.ui;
 
-import static com.example.util.Log.out;
-
 import com.example.database.Database;
 import com.example.util.Resource;
 import java.awt.BorderLayout;
@@ -25,17 +23,12 @@ public class MainWindow {
     private static final String WINDOW_TITLE = "Merchant";
 
     public static void start() {
-        out("creating main window");
-
         SwingUtilities.invokeLater(() -> {
             Settings.applyTheme();
-
-            out("creating primary frame");
             val frame = new JFrame(WINDOW_TITLE);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLayout(new BorderLayout());
 
-            out("creating top panel");
             val topPanel = new JPanel(new BorderLayout(), Config.DOUBLE_BUFFER);
             val searchField = new JTextField(Config.DEFAULT_INPUT_COLUMNS);
             searchField.setPreferredSize(SEARCH_FIELD_SIZE);

@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import lombok.NonNull;
 import lombok.val;
-import static com.example.util.Log.out;
 
 class NewUser {
 
@@ -19,7 +18,6 @@ class NewUser {
     private JLabel warnLabel;
 
     public NewUser(@NonNull JFrame parent) {
-        out("creating new user modal");
         this.modal = new Modal(NEW_USER, parent);
         val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
 
@@ -57,7 +55,6 @@ class NewUser {
         JPasswordField confirmField,
         JPasswordField apiField
     ) {
-        out("submitting password");
         var warning = "";
         val pass = new String(passwordField.getPassword());
         val confirm = new String(confirmField.getPassword());
@@ -96,7 +93,6 @@ class NewUser {
             this.modal.dispose();
         } catch (Exception e) {
             Message.showError(this.modal, e);
-            out(String.valueOf(e));
         }
     }
 }
