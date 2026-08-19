@@ -27,10 +27,6 @@ public final class Log {
         timeMap.remove(key);
     }
 
-    public static void clear() {
-        timeMap.clear();
-    }
-
     public static void stop(@NonNull String key) {
         long mem =
             (Runtime.getRuntime().totalMemory() -

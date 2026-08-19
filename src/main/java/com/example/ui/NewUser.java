@@ -2,6 +2,8 @@ package com.example.ui;
 
 import com.example.database.Database;
 import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,33 +13,48 @@ import javax.swing.JPasswordField;
 import lombok.NonNull;
 import lombok.val;
 
-class NewUser {
+class NewUser implements AuthWindow {
 
     private static final String NEW_USER = "New User";
-    private Modal modal;
-    private JLabel warnLabel;
+    private final Modal modal;
+    private final JLabel warnLabel;
+    private final JPasswordField passwordField;
+    private final JPasswordField confirmField;
+    private final JPasswordField apiField;
+    private final JFrame parent;
+    private boolean complete = false;
+
+    @Override
+    public boolean getComplete() {
+        return this.complete;
+    }
+
+    public Modal getModal() {
+        return this.modal;
+    }
 
     public NewUser(@NonNull JFrame parent) {
-        this.modal = new Modal(NEW_USER, parent);
+        this.parent = parent;
+        this.modal = new Modal(NEW_USER, this.parent);
         val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
 
         val passwordLabel = new JLabel("New Password:");
-        val passwordField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
+        this.passwordField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
         val passwordPanel = new ChildPanel(passwordLabel, passwordField);
 
         val confirmLabel = new JLabel("Confirm Password:");
-        val confirmField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
+        this.confirmField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
         val confirmPanel = new ChildPanel(confirmLabel, confirmField);
 
         this.warnLabel = new JLabel("");
 
         val apiLabel = new JLabel("Massive API:");
-        val apiField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
+        this.apiField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
         val apiPanel = new ChildPanel(apiLabel, apiField);
 
         val submitButton = new JButton("Submit");
         submitButton.addActionListener(event -> {
-            this.submitPassword(passwordField, confirmField, apiField);
+            this.submitPassword();
         });
         val bottomPanel = new ChildPanel(warnLabel, submitButton);
 
@@ -47,41 +64,49 @@ class NewUser {
         panel.add(bottomPanel);
 
         this.modal.add(panel, BorderLayout.CENTER);
+        this.modal.addWindowListener(
+                new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        try {
+                        } catch (Exception ex) {
+                            System.out.println(ex);
+                            System.exit(-1);
+                        }
+                    }
+                });
         this.modal.setVisible(true);
     }
 
-    private void submitPassword(
-        JPasswordField passwordField,
-        JPasswordField confirmField,
-        JPasswordField apiField
-    ) {
+    private void submitPassword() {
         var warning = "";
-        val pass = new String(passwordField.getPassword());
-        val confirm = new String(confirmField.getPassword());
-        val key = new String(apiField.getPassword());
+        val password = new String(this.passwordField.getPassword());
+        val confirm = new String(this.confirmField.getPassword());
+        val key = new String(this.apiField.getPassword());
 
-        if (pass.isBlank() || pass.isEmpty()) {
+        if (password.isBlank() || password.isEmpty()) {
             warning = "Password cannot be blank!";
         } else if (confirm.isBlank() || confirm.isEmpty()) {
             warning = "Please confirm password!";
-        } else if (!pass.equals(confirm)) {
+        } else if (!password.equals(confirm)) {
             warning = "Passwords do not match!";
         } else {
             if (Database.dbExists()) {
                 int response = JOptionPane.showConfirmDialog(
-                    this.modal,
-                    "Are you sure? This will erase all existing data.",
-                    "Are you sure?",
-                    JOptionPane.YES_NO_OPTION
-                );
+                        this.modal,
+                        "Are you sure? This will erase all existing data.",
+                        "Are you sure?",
+                        JOptionPane.YES_NO_OPTION);
 
                 if (response == JOptionPane.YES_OPTION) {
-                    createNewUser(pass, key);
+                    createNewUser(password, key);
                     this.modal.dispose();
+                    this.complete = true;
                 }
             } else {
-                createNewUser(pass, key);
+                createNewUser(password, key);
                 this.modal.dispose();
+                this.complete = true;
             }
         }
         this.warnLabel.setText(warning);

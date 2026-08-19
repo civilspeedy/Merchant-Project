@@ -21,11 +21,13 @@ public class MainWindow {
 
     // Display Text
     private static final String WINDOW_TITLE = "Merchant";
+    private static JFrame frame;
 
     public static void start() {
         SwingUtilities.invokeLater(() -> {
             Settings.applyTheme();
-            val frame = new JFrame(WINDOW_TITLE);
+            frame = new JFrame(WINDOW_TITLE);
+            frame.setVisible(false);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLayout(new BorderLayout());
 
@@ -50,7 +52,6 @@ public class MainWindow {
 
             frame.setSize(WINDOW_SIZE);
             frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
 
             double[] sampleData = { 10, 25, 15, 40, 35, 50, 45, 60, 55, 70 };
 
@@ -65,14 +66,22 @@ public class MainWindow {
                 sampleTimes[i] = baseDate.plusHours(i);
             }
 
+            authenticate();
+
             val graph = new Graph(sampleData, sampleTimes);
             frame.add(graph, BorderLayout.CENTER);
-
-            if (Database.dbExists()) {
-                new Login(frame);
-            } else {
-                new NewUser(frame);
-            }
         });
+    }
+
+    private static void authenticate() {
+        val window = Database.dbExists()
+            ? new Login(frame)
+            : new NewUser(frame);
+
+        if (window.getComplete()) {
+            frame.setVisible(true);
+        } else {
+            authenticate();
+        }
     }
 }

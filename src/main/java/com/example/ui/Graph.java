@@ -24,17 +24,15 @@ import lombok.val;
  */
 public class Graph extends JPanel {
 
-    private static final DateTimeFormatter timeFormatter =
-        DateTimeFormatter.ofPattern("HH:mm");
-    private static final DateTimeFormatter dateFormatter =
-        DateTimeFormatter.ofPattern("MM-dd");
-    private static final DateTimeFormatter dateTimeFormatter =
-        DateTimeFormatter.ofPattern("MM-dd HH:mm");
+    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM-dd");
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM-dd HH:mm");
 
     private static final Dimension SIZE = new Dimension(400, 650);
     private static final int GAP = 30;
     private static final int GRAPH_POINT_WIDTH = 12;
     private static final int Y_HATCH_COUNT = 10;
+    private static final int LABEL_GAP = 50;
 
     private static Graphics2D graphics2d;
     private static Color graphColour = Color.BLACK;
@@ -60,8 +58,7 @@ public class Graph extends JPanel {
 
         if (times.length != values.length) {
             throw new IllegalArgumentException(
-                "values and times arrays must be same length"
-            );
+                    "values and times arrays must be same length");
         }
         this.checkTimes(times);
 
@@ -81,8 +78,7 @@ public class Graph extends JPanel {
             // Check if chronological
             if (i > 0 && times[i].isBefore(times[i - 1])) {
                 throw new IllegalArgumentException(
-                    "Times must be in chronological order"
-                );
+                        "Times must be in chronological order");
             }
 
             // Check if all on same day
@@ -110,9 +106,8 @@ public class Graph extends JPanel {
 
         graphics2d = (Graphics2D) graphics;
         graphics2d.setRenderingHint(
-            RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON
-        );
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
         graphics2d.setColor(graphColour);
 
         double valueRange = maxValue - minValue;
@@ -131,9 +126,8 @@ public class Graph extends JPanel {
         val graphPoints = new Point[this.numOfVals];
         for (int i = 0; i < this.numOfVals; i++) {
             long secondsFromStart = Duration.between(
-                minTime,
-                times[i]
-            ).getSeconds();
+                    minTime,
+                    times[i]).getSeconds();
             int x = (int) (secondsFromStart * xScale) + GAP;
             int y = (int) ((this.maxValue - this.values[i]) * yScale) + GAP;
 
@@ -147,11 +141,10 @@ public class Graph extends JPanel {
         graphics2d.drawLine(GAP, this.getHeight() - GAP, GAP, GAP);
 
         graphics2d.drawLine(
-            GAP,
-            this.getHeight() - GAP,
-            getWidth() - GAP,
-            getHeight() - GAP
-        );
+                GAP,
+                this.getHeight() - GAP,
+                getWidth() - GAP,
+                getHeight() - GAP);
 
         // Set font for axis labels
         graphics2d.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -159,26 +152,23 @@ public class Graph extends JPanel {
 
         for (int i = 0; i <= Y_HATCH_COUNT; i++) {
             int x = GRAPH_POINT_WIDTH + GAP;
-            int y =
-                this.getHeight() -
-                ((i * (this.getHeight() - GAP * 2)) / Y_HATCH_COUNT + GAP);
+            int y = this.getHeight() -
+                    ((i * (this.getHeight() - GAP * 2)) / Y_HATCH_COUNT + GAP);
             graphics2d.drawLine(x, y, GAP, y);
 
             // Add Y-axis label
             double value = minValue + (valueRange * i) / Y_HATCH_COUNT;
             String label = String.format("%.1f", value);
             graphics2d.drawString(
-                label,
-                GAP - 5 - graphics2d.getFontMetrics().stringWidth(label),
-                y + 4
-            );
+                    label,
+                    GAP - 5 - graphics2d.getFontMetrics().stringWidth(label),
+                    y + 4);
         }
 
         for (int i = 0; i < this.numOfVals; i++) {
             long secondsFromStart = java.time.Duration.between(
-                minTime,
-                times[i]
-            ).getSeconds();
+                    minTime,
+                    times[i]).getSeconds();
             int x = (int) (secondsFromStart * xScale) + GAP;
             int y1 = this.getHeight() - GAP;
             int y2 = y1 - GRAPH_POINT_WIDTH;
@@ -195,31 +185,31 @@ public class Graph extends JPanel {
             } else {
                 label = times[i].format(dateTimeFormatter);
             }
+
+            int labelX = x - graphics2d.getFontMetrics().stringWidth(label) / 2;
+            int labelY = this.getHeight() - LABEL_GAP;
             graphics2d.drawString(
-                label,
-                x - graphics2d.getFontMetrics().stringWidth(label) / 2,
-                this.getHeight() - GAP + 20
-            );
+                    label,
+                    labelX,
+                    labelY);
 
             // Draw connecting line (except for last point)
             if (i > 0) {
                 graphics2d.drawLine(
-                    graphPoints[i - 1].x,
-                    graphPoints[i - 1].y,
-                    graphPoints[i].x,
-                    graphPoints[i].y
-                );
+                        graphPoints[i - 1].x,
+                        graphPoints[i - 1].y,
+                        graphPoints[i].x,
+                        graphPoints[i].y);
             }
 
             // Draw point
             int pointX = graphPoints[i].x - GRAPH_POINT_WIDTH / 2;
             int pointY = graphPoints[i].y - GRAPH_POINT_WIDTH / 2;
             graphics2d.fillOval(
-                pointX,
-                pointY,
-                GRAPH_POINT_WIDTH,
-                GRAPH_POINT_WIDTH
-            );
+                    pointX,
+                    pointY,
+                    GRAPH_POINT_WIDTH,
+                    GRAPH_POINT_WIDTH);
         }
 
         stop("paint component");
@@ -229,7 +219,6 @@ public class Graph extends JPanel {
         graphColour = colour;
         if (graphics2d != null) {
             graphics2d.setColor(colour);
-            System.out.println("trigger");
         }
     }
 }

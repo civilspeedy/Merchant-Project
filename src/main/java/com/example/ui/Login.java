@@ -1,70 +1,95 @@
 package com.example.ui;
 
-import static com.example.util.Log.clear;
 import static com.example.util.Log.start;
 import static com.example.util.Log.stop;
 
 import com.example.database.Database;
 import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLInvalidAuthorizationSpecException;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import lombok.val;
 
-class Login {
+class Login implements AuthWindow {
 
     private static final String LOGIN_TITLE = "Login";
+    private final Modal modal;
+    private final JPasswordField passwordField;
+    private boolean complete = false;
+    private NewUser newUserWindow;
+
+    @Override
+    public boolean getComplete() {
+        return this.complete;
+    }
 
     public Login(JFrame parent) {
-        val modal = new Modal(LOGIN_TITLE, parent);
+        this.modal = new Modal(LOGIN_TITLE, parent);
 
         val panel = new JPanel(Config.MODAL_GRID, Config.DOUBLE_BUFFER);
         panel.setBorder(Config.EMPTY_BORDER);
 
-        val passwordField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
+        this.passwordField = new JPasswordField(Config.DEFAULT_INPUT_COLUMNS);
 
         val submitButton = new JButton("Submit");
         submitButton.setPreferredSize(Config.TEXT_BUTTON_SIZE);
-        submitButton.addActionListener(event -> {
-            submitPassword(modal, passwordField);
+        submitButton.addActionListener(e -> {
+            this.submitPassword();
         });
 
         val newUserButton = new JButton("Create New User");
         newUserButton.setPreferredSize(Config.TEXT_BUTTON_SIZE);
         newUserButton.addActionListener(e -> {
             modal.setVisible(false);
-            new NewUser(parent);
-            modal.setVisible(true);
+            newUserWindow = new NewUser(parent);
+            newUserWindow.getModal().addWindowListener(
+                    new WindowAdapter() {
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                            newUserWindow = null;
+                            modal.setVisible(true);
+                        }
+                    });
         });
 
         panel.add(passwordField);
         panel.add(submitButton);
         panel.add(newUserButton);
 
-        modal.add(panel, BorderLayout.CENTER);
-        modal.setVisible(true);
+        this.modal.add(panel, BorderLayout.CENTER);
+        this.modal.addWindowListener(
+                new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        try {
+                            System.exit(0);
+                        } catch (Exception ex) {
+                            System.out.println(ex);
+                            System.exit(-1);
+                        }
+
+                    }
+                });
+        this.modal.setVisible(true);
     }
 
-    private static void submitPassword(
-        JDialog dialog,
-        JPasswordField passwordField
-    ) {
+    private void submitPassword() {
         start("submit password");
         try {
-            Database.login(new String(passwordField.getPassword()));
+            Database.login(new String(this.passwordField.getPassword()));
             stop("submit password");
-            dialog.dispose();
+            this.modal.dispose();
+            this.complete = true;
             // trigger load
         } catch (SQLInvalidAuthorizationSpecException e) {
-            clear("login failed");
-            JOptionPane.showMessageDialog(dialog, "Invalid password!");
+            JOptionPane.showMessageDialog(this.modal, "Invalid password!");
         } catch (Exception e) {
-            clear("login failed");
-            Message.showError(dialog, e);
+            Message.showError(this.modal, e);
         }
     }
 }

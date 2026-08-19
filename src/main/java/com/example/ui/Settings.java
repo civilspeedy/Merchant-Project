@@ -21,7 +21,7 @@ class Settings {
 
     private static final String SWITCH_TO_DARK = "Switch to Dark Theme";
     private static final String SWITCH_TO_LIGHT = "Switch to Light Theme";
-    public static boolean darkMode = false;
+    private static boolean darkMode = false;
 
     public Settings(JFrame parent) {
         start("create settings");

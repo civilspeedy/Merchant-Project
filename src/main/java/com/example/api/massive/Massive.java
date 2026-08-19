@@ -1,6 +1,5 @@
 package com.example.api.massive;
 
-import static com.example.util.Log.clear;
 import static com.example.util.Log.start;
 import static com.example.util.Log.stop;
 
@@ -29,8 +28,7 @@ public class Massive {
     private static LocalTime lastRequest = null;
     private static String key;
 
-    String expected =
-        "https://api.massive.com/v2/aggs/ticker/AAPL/range/1/day/2025-11-20/2025-12-28?adjusted=true&sort=asc&limit=100&apiKey=";
+    String expected = "https://api.massive.com/v2/aggs/ticker/AAPL/range/1/day/2025-11-20/2025-12-28?adjusted=true&sort=asc&limit=100&apiKey=";
 
     // can't believe I committed with the key still there...
 
@@ -42,12 +40,12 @@ public class Massive {
         int month = date.getMonthValue();
         int day = date.getDayOfMonth();
         return new StringBuilder()
-            .append(date.getYear())
-            .append('-')
-            .append(smallNumFmt(month))
-            .append('-')
-            .append(smallNumFmt(day))
-            .toString();
+                .append(date.getYear())
+                .append('-')
+                .append(smallNumFmt(month))
+                .append('-')
+                .append(smallNumFmt(day))
+                .toString();
     }
 
     private static boolean stringCheck(@NonNull String str) {
@@ -55,18 +53,16 @@ public class Massive {
     }
 
     public static AggregateBars getAggregate(
-        LocalDate start,
-        LocalDate end,
-        String code
-    ) throws Exception {
+            LocalDate start,
+            LocalDate end,
+            String code) throws Exception {
         start("get aggregate");
         if (start.compareTo(end) >= 0) {
             throw new IllegalArgumentException("end cannot be before start");
         }
         if (stringCheck(code)) {
             throw new IllegalArgumentException(
-                "code cannot be empty, blank or null"
-            );
+                    "code cannot be empty, blank or null");
         }
         if (stringCheck(key)) {
             throw new IllegalStateException("key is unassigned");
@@ -75,7 +71,8 @@ public class Massive {
         if (lastRequest != null) {
             val timeDifference = Duration.between(lastRequest, LocalTime.now());
             // I don't trust this to work as I expect.
-            // A separate thread or ticker to reset count every minute would probably be more reliable but could prove overkill.
+            // A separate thread or ticker to reset count every minute would probably be
+            // more reliable but could prove overkill.
             if (timeDifference.toMinutes() > 1) {
                 requestCount = 0;
             }
@@ -83,34 +80,32 @@ public class Massive {
 
         if (requestCount > MAX_REQUESTS) {
             throw new IllegalStateException(
-                "no more than five request can be made per minute"
-            );
+                    "no more than five request can be made per minute");
         }
 
         val startString = localToString(start);
         val endString = localToString(end);
         val url = new StringBuilder(URL_BASE)
-            .append("aggs/ticker/")
-            .append(code)
-            .append("/range/1/day/")
-            .append(startString)
-            .append('/')
-            .append(endString)
-            .append("?adjusted=true&sort=asc&limit=120&apiKey=")
-            .append(key)
-            .toString();
+                .append("aggs/ticker/")
+                .append(code)
+                .append("/range/1/day/")
+                .append(startString)
+                .append('/')
+                .append(endString)
+                .append("?adjusted=true&sort=asc&limit=120&apiKey=")
+                .append(key)
+                .toString();
 
         val request = HttpRequest.newBuilder()
-            .uri(new URI(url))
-            .GET()
-            .headers("user-agent", USER_AGENT)
-            .header("accept", ACCEPT)
-            .build();
+                .uri(new URI(url))
+                .GET()
+                .headers("user-agent", USER_AGENT)
+                .header("accept", ACCEPT)
+                .build();
 
         val response = client.send(
-            request,
-            HttpResponse.BodyHandlers.ofString()
-        );
+                request,
+                HttpResponse.BodyHandlers.ofString());
 
         requestCount++;
         lastRequest = LocalTime.now();
@@ -124,11 +119,10 @@ public class Massive {
     }
 
     public static void setKey(@NonNull String k)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
         if (k.isBlank() || k.isEmpty()) {
             throw new IllegalArgumentException(
-                "massive api key cannot be empty or blank"
-            );
+                    "massive api key cannot be empty or blank");
         }
 
         key = k;

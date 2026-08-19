@@ -1,6 +1,5 @@
 package com.example.database;
 
-import static com.example.util.Log.clear;
 import static com.example.util.Log.start;
 import static com.example.util.Log.stop;
 
@@ -17,9 +16,9 @@ public final class Database {
     private static final String DB_PATH = "./data/database";
     private static final String DB_URL = "jdbc:h2:file:" + DB_PATH;
     private static final String[] DB_EXTENSIONS = new String[] {
-        ".mv.db",
-        ".trace.db",
-        ".lock.db",
+            ".mv.db",
+            ".trace.db",
+            ".lock.db",
     };
 
     private static final String USER = "sa";
@@ -33,8 +32,7 @@ public final class Database {
             if (file.exists()) {
                 if (!file.delete()) {
                     throw new RuntimeException(
-                        "Failed to delete database file: " + path
-                    );
+                            "Failed to delete database file: " + path);
                 }
             }
         }
@@ -42,7 +40,7 @@ public final class Database {
     }
 
     public static void newUser(String password, String key)
-        throws SQLException {
+            throws SQLException {
         start("new user");
         destroyDb();
         login(password);
@@ -55,6 +53,14 @@ public final class Database {
         start("login");
         connection = DriverManager.getConnection(DB_URL, USER, password);
         stop("login");
+    }
+
+    public static void closeConnection() throws SQLException {
+        start("close connection");
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+        }
+        stop("close connection");
     }
 
     public static boolean dbExists() {
@@ -92,15 +98,15 @@ public final class Database {
     private static void createTables() throws SQLException {
         start("create tables");
         String sql = Query.createTables();
-        val statement = connection.createStatement();
-        statement.execute(sql);
-        statement.close();
-        connection.commit();
+        try (val statement = connection.createStatement()) {
+            statement.execute(sql);
+            connection.commit();
+        }
         stop("create tables");
     }
 
     private static void insert(Table table, Object[] values)
-        throws SQLException {
+            throws SQLException {
         start("insert row");
         String query = switch (table) {
             case TRANSACTIONS -> Query.insetIntoTrans(values);
@@ -108,32 +114,30 @@ public final class Database {
             case INVENTORY -> Query.insetIntoTrans(values);
         };
 
-        val statement = connection.createStatement();
-        statement.execute(query);
-
-        statement.close();
-        connection.commit();
+        try (val statement = connection.createStatement()) {
+            statement.execute(query);
+            connection.commit();
+        }
         stop("insert row");
     }
 
     private static Object selectOne(Table table, String target)
-        throws SQLException {
+            throws SQLException {
         start("select record");
         String sql = switch (table) {
             case API -> Query.selectFromApi(target);
             default -> "";
         };
 
-        val statement = connection.prepareStatement(sql);
-
-        ResultSet results = statement.executeQuery();
-
-        if (results.next()) {
-            stop("select record");
-            return results.getObject(1);
-        } else {
-            clear("select failed");
-            throw new SQLException("no objects found in table");
+        try (
+                val statement = connection.prepareStatement(sql);
+                ResultSet results = statement.executeQuery()) {
+            if (results.next()) {
+                stop("select record");
+                return results.getObject(1);
+            } else {
+                throw new SQLException("no objects found in table");
+            }
         }
     }
 
@@ -149,26 +153,24 @@ public final class Database {
             throw new IllegalArgumentException("Invalid table for select all");
         }
 
-        val statement = connection.prepareStatement(sql);
-
-        ResultSet result = statement.executeQuery();
-
         val results = new ArrayList<String>();
 
-        while (result.next()) {
-            val rowString = new StringBuilder();
-            val meta = result.getMetaData();
+        try (
+                val statement = connection.prepareStatement(sql);
+                ResultSet result = statement.executeQuery()) {
+            while (result.next()) {
+                val rowString = new StringBuilder();
+                val meta = result.getMetaData();
 
-            for (int i = 1; i <= meta.getColumnCount(); i++) {
-                if (i > 1) {
-                    rowString.append(',');
+                for (int i = 1; i <= meta.getColumnCount(); i++) {
+                    if (i > 1) {
+                        rowString.append(',');
+                    }
+                    rowString.append(result.getObject(i));
                 }
-                rowString.append(result.getObject(i));
+                results.add(String.valueOf(rowString));
             }
-            results.add(String.valueOf(rowString));
         }
-
-        statement.close();
 
         stop("select all");
         return results.toArray(new String[0]);
