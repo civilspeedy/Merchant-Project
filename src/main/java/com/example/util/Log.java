@@ -57,7 +57,7 @@ public final class Log {
             RESET
         );
 
-        timeMap.remove(key);
+        clear(key);
         System.out.println(msg);
     }
 }

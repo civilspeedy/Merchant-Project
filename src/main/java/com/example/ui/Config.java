@@ -47,7 +47,8 @@ final class Config {
         CORNFLOWER_BLUE,
         DARKER_GRAY,
         LIGHTER_GRAY,
-        GRAY
+        GRAY,
+        WHITE
     );
 
     public static final Theme LIGHT_THEME = new Theme(
@@ -58,6 +59,7 @@ final class Config {
         DEEP_BLUE,
         WHITE,
         BLACK,
-        GRAY
+        GRAY,
+        BLACK
     );
 }

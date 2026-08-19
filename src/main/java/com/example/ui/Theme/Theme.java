@@ -14,5 +14,6 @@ public record Theme(
     @NonNull Color buttonFocus,
     @NonNull Color textfieldBackground,
     @NonNull Color textfieldForeground,
-    Color border
+    Color border,
+    @NonNull Color graphLine
 ) {}

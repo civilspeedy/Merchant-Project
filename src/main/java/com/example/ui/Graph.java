@@ -36,6 +36,8 @@ public class Graph extends JPanel {
     private static final int GRAPH_POINT_WIDTH = 12;
     private static final int Y_HATCH_COUNT = 10;
 
+    private static Graphics2D graphics2d;
+    private static Color graphColour = Color.BLACK;
     private double[] values;
     private double maxValue;
     private double minValue;
@@ -106,11 +108,12 @@ public class Graph extends JPanel {
         start("paint component");
         super.paintComponent(graphics);
 
-        Graphics2D graphics2D = (Graphics2D) graphics;
-        graphics2D.setRenderingHint(
+        graphics2d = (Graphics2D) graphics;
+        graphics2d.setRenderingHint(
             RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON
         );
+        graphics2d.setColor(graphColour);
 
         double valueRange = maxValue - minValue;
         if (valueRange == 0) {
@@ -141,9 +144,9 @@ public class Graph extends JPanel {
             graphPoints[i] = new Point(x, y);
         }
 
-        graphics2D.drawLine(GAP, this.getHeight() - GAP, GAP, GAP);
+        graphics2d.drawLine(GAP, this.getHeight() - GAP, GAP, GAP);
 
-        graphics2D.drawLine(
+        graphics2d.drawLine(
             GAP,
             this.getHeight() - GAP,
             getWidth() - GAP,
@@ -151,22 +154,22 @@ public class Graph extends JPanel {
         );
 
         // Set font for axis labels
-        graphics2D.setFont(new Font("Arial", Font.PLAIN, 12));
-        graphics2D.setColor(Color.BLACK);
+        graphics2d.setFont(new Font("Arial", Font.PLAIN, 12));
+        graphics2d.setColor(graphColour);
 
         for (int i = 0; i <= Y_HATCH_COUNT; i++) {
             int x = GRAPH_POINT_WIDTH + GAP;
             int y =
                 this.getHeight() -
                 ((i * (this.getHeight() - GAP * 2)) / Y_HATCH_COUNT + GAP);
-            graphics2D.drawLine(x, y, GAP, y);
+            graphics2d.drawLine(x, y, GAP, y);
 
             // Add Y-axis label
             double value = minValue + (valueRange * i) / Y_HATCH_COUNT;
             String label = String.format("%.1f", value);
-            graphics2D.drawString(
+            graphics2d.drawString(
                 label,
-                GAP - 5 - graphics2D.getFontMetrics().stringWidth(label),
+                GAP - 5 - graphics2d.getFontMetrics().stringWidth(label),
                 y + 4
             );
         }
@@ -181,7 +184,7 @@ public class Graph extends JPanel {
             int y2 = y1 - GRAPH_POINT_WIDTH;
 
             // Draw x hatch
-            graphics2D.drawLine(x, y1, x, y2);
+            graphics2d.drawLine(x, y1, x, y2);
 
             // Add X-axis label with appropriate format
             String label;
@@ -192,15 +195,15 @@ public class Graph extends JPanel {
             } else {
                 label = times[i].format(dateTimeFormatter);
             }
-            graphics2D.drawString(
+            graphics2d.drawString(
                 label,
-                x - graphics2D.getFontMetrics().stringWidth(label) / 2,
+                x - graphics2d.getFontMetrics().stringWidth(label) / 2,
                 this.getHeight() - GAP + 20
             );
 
             // Draw connecting line (except for last point)
             if (i > 0) {
-                graphics2D.drawLine(
+                graphics2d.drawLine(
                     graphPoints[i - 1].x,
                     graphPoints[i - 1].y,
                     graphPoints[i].x,
@@ -211,13 +214,22 @@ public class Graph extends JPanel {
             // Draw point
             int pointX = graphPoints[i].x - GRAPH_POINT_WIDTH / 2;
             int pointY = graphPoints[i].y - GRAPH_POINT_WIDTH / 2;
-            graphics2D.fillOval(
+            graphics2d.fillOval(
                 pointX,
                 pointY,
                 GRAPH_POINT_WIDTH,
                 GRAPH_POINT_WIDTH
             );
         }
+
         stop("paint component");
+    }
+
+    public static void setGraphColour(Color colour) {
+        graphColour = colour;
+        if (graphics2d != null) {
+            graphics2d.setColor(colour);
+            System.out.println("trigger");
+        }
     }
 }

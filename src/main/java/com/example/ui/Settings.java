@@ -90,6 +90,7 @@ class Settings {
         UIManager.put("TextField.background", theme.textfieldBackground());
         UIManager.put("TextField.foreground", theme.textfieldForeground());
         UIManager.put("TextField.border", theme.border());
+        Graph.setGraphColour(theme.graphLine());
         stop("apply theme");
     }
 }
