@@ -1,15 +1,17 @@
 package com.example.ui;
 
 import com.example.database.Database;
-import com.example.util.Resource;
+import com.example.ui.Theme.Icon;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.time.LocalDateTime;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import lombok.val;
 
 public class MainWindow {
@@ -23,8 +25,26 @@ public class MainWindow {
     private static final String WINDOW_TITLE = "Merchant";
     private static JFrame frame;
 
+    private static JButton settingsButton = new JButton(Icon.SETTINGS_BLACK);
+    private static JButton searchButton = new JButton(Icon.SEARCH_BLACK);
+
+    public static void setSettingsIcon(ImageIcon icon) {
+        settingsButton.setIcon(icon);
+    }
+
+    public static void setSearchIcon(ImageIcon icon) {
+        searchButton.setIcon(icon);
+    }
+
     public static void start() {
         SwingUtilities.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(
+                        "javax.swing.plaf.nimbus.NimbusLookAndFeel");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
             Settings.applyTheme();
             frame = new JFrame(WINDOW_TITLE);
             frame.setVisible(false);
@@ -36,11 +56,9 @@ public class MainWindow {
             searchField.setPreferredSize(SEARCH_FIELD_SIZE);
             searchField.setToolTipText("Search...");
             topPanel.add(searchField, BorderLayout.CENTER);
+            topPanel.add(searchButton, BorderLayout.EAST); // need to fit within panel
 
             // Settings button
-            val settingsButton = new JButton(
-                Resource.getIcon(Resource.Icon.SETTINGS)
-            );
             settingsButton.setToolTipText("Settings");
             settingsButton.setPreferredSize(ICON_BUTTON_SIZE);
             settingsButton.addActionListener(event -> {
@@ -58,10 +76,10 @@ public class MainWindow {
             // Create sample LocalDateTime values all on the same day (today) - ai generated
             LocalDateTime[] sampleTimes = new LocalDateTime[sampleData.length];
             LocalDateTime baseDate = LocalDateTime.now()
-                .withHour(9)
-                .withMinute(0)
-                .withSecond(0)
-                .withNano(0);
+                    .withHour(9)
+                    .withMinute(0)
+                    .withSecond(0)
+                    .withNano(0);
             for (int i = 0; i < sampleTimes.length; i++) {
                 sampleTimes[i] = baseDate.plusHours(i);
             }
@@ -75,8 +93,8 @@ public class MainWindow {
 
     private static void authenticate() {
         val window = Database.dbExists()
-            ? new Login(frame)
-            : new NewUser(frame);
+                ? new Login(frame)
+                : new NewUser(frame);
 
         if (window.getComplete()) {
             frame.setVisible(true);

@@ -7,13 +7,13 @@ import lombok.NonNull;
  * Theme
  */
 public record Theme(
-    @NonNull Color control,
-    @NonNull Color text,
-    @NonNull Color buttonBackground,
-    @NonNull Color buttonForeground,
-    @NonNull Color buttonFocus,
-    @NonNull Color textfieldBackground,
-    @NonNull Color textfieldForeground,
-    Color border,
-    @NonNull Color graphLine
-) {}
+        @NonNull Color control,
+        @NonNull Color text,
+        @NonNull Color buttonBackground,
+        @NonNull Color buttonForeground,
+        @NonNull Color buttonFocus,
+        @NonNull Color textfieldBackground,
+        @NonNull Color textfieldForeground,
+        Color border,
+        @NonNull Color graphLine) {
+}
