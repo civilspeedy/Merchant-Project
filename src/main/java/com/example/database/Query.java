@@ -2,7 +2,10 @@ package com.example.database;
 
 import lombok.val;
 
-final class Query {
+/**
+ * Class for generating SQL queries. All methods are static.
+ */
+public final class Query {
     // API table
     private static final String API_TABLE_NAME = "api_keys";
     private static final String API_FIELDS = "(name, api_key)";
