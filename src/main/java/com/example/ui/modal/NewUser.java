@@ -1,6 +1,10 @@
-package com.example.ui;
+package com.example.ui.modal;
 
 import com.example.database.Database;
+import com.example.ui.Config;
+import com.example.ui.components.ChildPanel;
+import com.example.ui.messages.ErrorMessage;
+
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -13,7 +17,7 @@ import javax.swing.JPasswordField;
 import lombok.NonNull;
 import lombok.val;
 
-class NewUser implements AuthWindow {
+public class NewUser implements AuthWindow {
 
     private static final String NEW_USER = "New User";
     private final Modal modal;
@@ -117,7 +121,7 @@ class NewUser implements AuthWindow {
             Database.newUser(password, key);
             this.modal.dispose();
         } catch (Exception e) {
-            Message.showError(this.modal, e);
+            new ErrorMessage(this.modal, e);
         }
     }
 }

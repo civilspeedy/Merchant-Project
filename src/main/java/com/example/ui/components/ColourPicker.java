@@ -1,4 +1,4 @@
-package com.example.ui;
+package com.example.ui.components;
 
 import java.awt.Color;
 import javax.swing.JButton;
@@ -14,10 +14,9 @@ public class ColourPicker extends JButton {
 
         this.addActionListener(e -> {
             this.colour = JColorChooser.showDialog(
-                this,
-                "Colour Picker",
-                defaultColour
-            );
+                    this,
+                    "Colour Picker",
+                    defaultColour);
         });
     }
 

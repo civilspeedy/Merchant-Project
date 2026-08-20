@@ -1,4 +1,4 @@
-package com.example.ui;
+package com.example.ui.graph;
 
 import static com.example.util.Log.start;
 import static com.example.util.Log.stop;

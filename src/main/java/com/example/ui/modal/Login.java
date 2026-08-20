@@ -1,9 +1,12 @@
-package com.example.ui;
+package com.example.ui.modal;
 
 import static com.example.util.Log.start;
 import static com.example.util.Log.stop;
 
 import com.example.database.Database;
+import com.example.ui.Config;
+import com.example.ui.messages.ErrorMessage;
+
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -15,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import lombok.val;
 
-class Login implements AuthWindow {
+public class Login implements AuthWindow {
 
     private static final String LOGIN_TITLE = "Login";
     private final Modal modal;
@@ -89,7 +92,7 @@ class Login implements AuthWindow {
         } catch (SQLInvalidAuthorizationSpecException e) {
             JOptionPane.showMessageDialog(this.modal, "Invalid password!");
         } catch (Exception e) {
-            Message.showError(this.modal, e);
+            new ErrorMessage(this.modal, e);
         }
     }
 }

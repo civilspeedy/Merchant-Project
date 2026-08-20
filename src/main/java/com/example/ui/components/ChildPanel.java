@@ -1,10 +1,12 @@
-package com.example.ui;
+package com.example.ui.components;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
 import javax.swing.JPanel;
 
-class ChildPanel extends JPanel {
+import com.example.ui.Config;
+
+public class ChildPanel extends JPanel {
 
     public ChildPanel() {
         super(new FlowLayout(FlowLayout.LEFT), Config.DOUBLE_BUFFER);
@@ -12,7 +14,8 @@ class ChildPanel extends JPanel {
 
     public ChildPanel(Component[] components) {
         this();
-        for (Component c : components) this.add(c);
+        for (Component c : components)
+            this.add(c);
     }
 
     public ChildPanel(Component compOne) {
@@ -27,10 +30,9 @@ class ChildPanel extends JPanel {
     }
 
     public ChildPanel(
-        Component compOne,
-        Component compTwo,
-        Component compThree
-    ) {
+            Component compOne,
+            Component compTwo,
+            Component compThree) {
         this();
         this.add(compOne);
         this.add(compTwo);
@@ -38,11 +40,10 @@ class ChildPanel extends JPanel {
     }
 
     public ChildPanel(
-        Component compOne,
-        Component compTwo,
-        Component compThree,
-        Component compFour
-    ) {
+            Component compOne,
+            Component compTwo,
+            Component compThree,
+            Component compFour) {
         this();
         this.add(compOne);
         this.add(compTwo);
@@ -51,12 +52,11 @@ class ChildPanel extends JPanel {
     }
 
     public ChildPanel(
-        Component compOne,
-        Component compTwo,
-        Component compThree,
-        Component compFour,
-        Component compFive
-    ) {
+            Component compOne,
+            Component compTwo,
+            Component compThree,
+            Component compFour,
+            Component compFive) {
         this();
         this.add(compOne);
         this.add(compTwo);
@@ -66,13 +66,12 @@ class ChildPanel extends JPanel {
     }
 
     public ChildPanel(
-        Component compOne,
-        Component compTwo,
-        Component compThree,
-        Component compFour,
-        Component compFive,
-        Component compSix
-    ) {
+            Component compOne,
+            Component compTwo,
+            Component compThree,
+            Component compFour,
+            Component compFive,
+            Component compSix) {
         this();
         this.add(compOne);
         this.add(compTwo);

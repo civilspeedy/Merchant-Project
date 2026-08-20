@@ -1,10 +1,14 @@
-package com.example.ui;
+package com.example.ui.modal;
 
 import static com.example.util.Log.start;
 import static com.example.util.Log.stop;
 
+import com.example.ui.Config;
+import com.example.ui.Window;
 import com.example.ui.Theme.Icon;
 import com.example.ui.Theme.Theme;
+import com.example.ui.graph.Graph;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
@@ -16,7 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import lombok.val;
 
-class Settings {
+public class Settings {
 
     private static final String SETTINGS_TITLE = "Settings";
 
@@ -80,9 +84,9 @@ class Settings {
         UIManager.put("TextField.foreground", theme.textfieldForeground());
         UIManager.put("TextField.border", theme.border());
         Graph.setGraphColour(theme.graphLine());
-        MainWindow.setSettingsIcon(
+        Window.setSettingsIcon(
                 darkMode ? Icon.SETTINGS_WHITE : Icon.SETTINGS_BLACK);
-        MainWindow.setSearchIcon(darkMode ? Icon.SEARCH_WHITE : Icon.SEARCH_BLACK);
+        Window.setSearchIcon(darkMode ? Icon.SEARCH_WHITE : Icon.SEARCH_BLACK);
         themeToggle.setIcon(darkMode ? Icon.SUN : Icon.MOON);
         stop("apply theme");
     }

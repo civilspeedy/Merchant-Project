@@ -2,6 +2,11 @@ package com.example.ui;
 
 import com.example.database.Database;
 import com.example.ui.Theme.Icon;
+import com.example.ui.graph.Graph;
+import com.example.ui.modal.Login;
+import com.example.ui.modal.NewUser;
+import com.example.ui.modal.Settings;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.time.LocalDateTime;
@@ -14,8 +19,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import lombok.val;
 
-public class MainWindow {
-
+public class Window {
     // Size
     private static final Dimension WINDOW_SIZE = new Dimension(1920, 1080);
     private static final Dimension SEARCH_FIELD_SIZE = new Dimension(300, 30);
