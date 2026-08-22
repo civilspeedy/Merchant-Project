@@ -16,24 +16,30 @@ import lombok.NonNull;
 import lombok.val;
 import tools.jackson.databind.ObjectMapper;
 
-public class Massive {
+/**
+ * Class for managing API request to the Massive financial service, along with
+ * managing data related to and from these requests. All methods are static.
+ */
+public final class Massive {
 
     private static final String URL_BASE = "https://api.massive.com/v2/";
     private static final HttpClient client = HttpClient.newBuilder().build();
     private static final String USER_AGENT = "Mozilla/5.0 (Java-HttpClient)";
     private static final String ACCEPT = "application/json";
+    private static final String NUM_FORMAT = "%02d";
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static final byte MAX_REQUESTS = 5;
-    private static byte requestCount = 0;
+    private static final int MAX_REQUESTS = 5;
+    private static final int OK = 200;
+
+    private static int requestCount = 0;
     private static LocalTime lastRequest = null;
     private static String key;
 
-    String expected = "https://api.massive.com/v2/aggs/ticker/AAPL/range/1/day/2025-11-20/2025-12-28?adjusted=true&sort=asc&limit=100&apiKey=";
+    String expected = "https://api.massive.com/v2/aggs/ticker/AAPL/range/1/day/2025-11-20/2025-12-28?adjusted=true&sort=asc&limit=100&apiKey="; // example
 
     // can't believe I committed with the key still there...
 
-    private static String smallNumFmt(int num) {
-        return num < 10 ? "0" + num : String.valueOf(num);
+    private Massive() {
     }
 
     private static String localToString(LocalDate date) {
@@ -42,29 +48,30 @@ public class Massive {
         return new StringBuilder()
                 .append(date.getYear())
                 .append('-')
-                .append(smallNumFmt(month))
+                .append(String.format(NUM_FORMAT, month))
                 .append('-')
-                .append(smallNumFmt(day))
+                .append(String.format(NUM_FORMAT, day))
                 .toString();
     }
 
-    private static boolean stringCheck(@NonNull String str) {
+    private static boolean checkString(String str) {
         return str.isBlank() || str.isEmpty();
     }
 
     public static AggregateBars getAggregate(
-            LocalDate start,
-            LocalDate end,
-            String code) throws Exception {
+            @NonNull LocalDate start,
+            @NonNull LocalDate end,
+            @NonNull String code) throws Exception {
         start("get aggregate");
         if (start.compareTo(end) >= 0) {
             throw new IllegalArgumentException("end cannot be before start");
         }
-        if (stringCheck(code)) {
+
+        if (checkString(code)) {
             throw new IllegalArgumentException(
                     "code cannot be empty, blank or null");
         }
-        if (stringCheck(key)) {
+        if (checkString(key)) {
             throw new IllegalStateException("key is unassigned");
         }
 
@@ -111,20 +118,11 @@ public class Massive {
         lastRequest = LocalTime.now();
 
         int status = response.statusCode();
-        if (status != 200) {
+        if (status != OK) {
             throw new IOException("http request failure: " + status);
         }
         stop("get aggregate");
         return mapper.readValue(response.body(), AggregateBars.class);
     }
 
-    public static void setKey(@NonNull String k)
-            throws IllegalArgumentException {
-        if (k.isBlank() || k.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "massive api key cannot be empty or blank");
-        }
-
-        key = k;
-    }
 }

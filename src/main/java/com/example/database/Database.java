@@ -39,6 +39,9 @@ public final class Database {
     private static final String USER = "sa";
     private static Connection connection;
 
+    private Database() {
+    }
+
     /**
      * Deletes all files in database directory.
      */
@@ -138,12 +141,12 @@ public final class Database {
      * Fetches specified API key from database.
      * 
      * @param name Name of the API key to be fetched.
-     * @return
-     * @throws SQLException
+     * @return The API key fetched.
+     * @throws SQLException If insertion fails an exception will be thrown.
      */
     public static String getApiKey(String name) throws SQLException {
         start("get api key");
-        String result = String.valueOf(selectOne(Table.API, name));
+        val result = String.valueOf(selectOne(Table.API, name));
         stop("get api key");
         return result;
     }
@@ -154,6 +157,11 @@ public final class Database {
         API,
     }
 
+    /**
+     * Creates all tables to be used in database.
+     * 
+     * @throws SQLException If table creation fails an exception will be thrown.
+     */
     private static void createTables() throws SQLException {
         start("create tables");
         String sql = Query.createTables();
@@ -164,6 +172,13 @@ public final class Database {
         stop("create tables");
     }
 
+    /**
+     * Inserts values into specified table.
+     * 
+     * @param table  The table to insert values into.
+     * @param values The values to be inserted.
+     * @throws SQLException If insertion fails an exception will be thrown.
+     */
     private static void insert(Table table, Object[] values)
             throws SQLException {
         start("insert row");
@@ -180,6 +195,14 @@ public final class Database {
         stop("insert row");
     }
 
+    /**
+     * Selects one value from a table and returns it as an {@link Object}.
+     * 
+     * @param table  The table to select from.
+     * @param target The related field to target the selection value.
+     * @return The selected value as an {@link Object}.
+     * @throws SQLException If selection fails an exception will be thrown.
+     */
     private static Object selectOne(Table table, String target)
             throws SQLException {
         start("select record");
@@ -200,6 +223,13 @@ public final class Database {
         }
     }
 
+    /**
+     * Selects all values in a table and returns as array of {@link Object}s.
+     * 
+     * @param table The table to select from.
+     * @return An array of values from selection.
+     * @throws SQLException If selection fails an exception will be thrown.
+     */
     private static Object[] selectAll(Table table) throws SQLException {
         start("select all");
         String sql;

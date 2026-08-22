@@ -32,6 +32,9 @@ public final class Query {
      */
     private static final String INVALID_INPUT = "%s requires %s values, no more, no less";
 
+    private Query() {
+    }
+
     /**
      * Takes in an array of values and returns a string wrapped in brackets and
      * commas between each value, for use in an SQL query.
