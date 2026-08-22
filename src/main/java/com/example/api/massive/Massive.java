@@ -12,6 +12,8 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
 import lombok.NonNull;
 import lombok.val;
 import tools.jackson.databind.ObjectMapper;
@@ -22,36 +24,23 @@ import tools.jackson.databind.ObjectMapper;
  */
 public final class Massive {
 
-    private static final String URL_BASE = "https://api.massive.com/v2/";
+    private static final String URL_BASE = "https://api.massive.com/v2/%s/%s/range/%s/%s/%s?adjusted=true&sort=asc&limit=100&apiKey=%s";
     private static final HttpClient client = HttpClient.newBuilder().build();
     private static final String USER_AGENT = "Mozilla/5.0 (Java-HttpClient)";
     private static final String ACCEPT = "application/json";
-    private static final String NUM_FORMAT = "%02d";
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final int MAX_REQUESTS = 5;
     private static final int OK = 200;
+    private static final DateTimeFormatter ISO_FORMAT = DateTimeFormatter.ISO_DATE;
 
     private static int requestCount = 0;
     private static LocalTime lastRequest = null;
     private static String key;
 
-    String expected = "https://api.massive.com/v2/aggs/ticker/AAPL/range/1/day/2025-11-20/2025-12-28?adjusted=true&sort=asc&limit=100&apiKey="; // example
-
-    // can't believe I committed with the key still there...
+    // example:
+    // https://api.massive.com/v2/aggs/ticker/AAPL/range/1/day/2025-11-20/2025-12-28?adjusted=true&sort=asc&limit=100&apiKey=
 
     private Massive() {
-    }
-
-    private static String localToString(LocalDate date) {
-        int month = date.getMonthValue();
-        int day = date.getDayOfMonth();
-        return new StringBuilder()
-                .append(date.getYear())
-                .append('-')
-                .append(String.format(NUM_FORMAT, month))
-                .append('-')
-                .append(String.format(NUM_FORMAT, day))
-                .toString();
     }
 
     private static boolean checkString(String str) {
@@ -90,18 +79,8 @@ public final class Massive {
                     "no more than five request can be made per minute");
         }
 
-        val startString = localToString(start);
-        val endString = localToString(end);
-        val url = new StringBuilder(URL_BASE)
-                .append("aggs/ticker/")
-                .append(code)
-                .append("/range/1/day/")
-                .append(startString)
-                .append('/')
-                .append(endString)
-                .append("?adjusted=true&sort=asc&limit=120&apiKey=")
-                .append(key)
-                .toString();
+        val url = String.format(URL_BASE, "aggs/ticker", code, "1/day", start.format(ISO_FORMAT),
+                end.format(ISO_FORMAT), key);
 
         val request = HttpRequest.newBuilder()
                 .uri(new URI(url))

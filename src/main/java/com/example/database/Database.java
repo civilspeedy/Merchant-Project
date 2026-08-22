@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import lombok.val;
 
+// probably worth updating to use varargs (...)
+
 /**
  * 
  * Class for database access and manipulation. All methods are static.
